@@ -97,7 +97,7 @@ public class loginPage extends javax.swing.JFrame {
                 if (rs.next()) {
                     JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat datang, " + rs.getString("full_name"));
 
-//                    new jHomePage().setVisible(true); // Pindah ke halaman utama
+                    new jHomePage().setVisible(true); // Pindah ke halaman utama
                     this.dispose(); // Tutup jForm
                 } else {
                     JOptionPane.showMessageDialog(this, "Username atau password salah");
