@@ -4,12 +4,9 @@
  */
 package kresika;
 
+import java.util.Enumeration;
+import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  *
@@ -21,7 +18,33 @@ public class jHomePage extends javax.swing.JFrame {
      * Creates new form loginPage
      */
     public jHomePage() {
-        initComponents();
+
+        initComponents(); // Metode yang di-generate oleh GUI builder
+
+        // --- Mengatur Action Command untuk RadioGroupRoute ---
+        jRadioBandung.setActionCommand("RUTE_BANDUNG"); // Nilai unik untuk Bandung
+        jRadioSurabaya.setActionCommand("RUTE_SURABAYA");
+        jRadioJatinegara.setActionCommand("RUTE_JATINEGARA");
+        jRadioBlitar.setActionCommand("RUTE_BLITAR");
+        jRadioJogjakarta.setActionCommand("RUTE_JOGJAKARTA");
+        jRadioMalang.setActionCommand("RUTE_MALANG");
+        // ... dan seterusnya untuk semua radio button rute lainnya
+
+        // --- Mengatur Action Command untuk RadioGroupClassTrain ---
+        jRadioBSIexp1E.setActionCommand("KELAS_BSI_EXP1_E"); // Nilai unik untuk kelas BSI Express 1 Ekonomi
+        jRadioBSIexp2B.setActionCommand("KELAS_BSI_EXP2_B");
+        jRadioKAIexp1E.setActionCommand("KELAS_KAI_EXP1_E");
+        jRadioKAIexp2B.setActionCommand("KELAS_KAI_EXP2_B");
+        // ... dan seterusnya untuk semua radio button kelas lainnya
+
+        // Pastikan semua radio button ditambahkan ke ButtonGroup yang sesuai
+        // (Ini seharusnya sudah ada dari langkah sebelumnya)
+        RadioGroupRoute.add(jRadioBandung);
+        RadioGroupRoute.add(jRadioSurabaya);
+        // ... (tambahkan semua rute)
+
+        RadioGroupClassTrain.add(jRadioBSIexp1E);
+        RadioGroupClassTrain.add(jRadioBSIexp2B);
     }
 
     /**
@@ -34,18 +57,29 @@ public class jHomePage extends javax.swing.JFrame {
     private void initComponents() {
 
         RadioGroupRoute = new javax.swing.ButtonGroup();
+        RadioGroupClassTrain = new javax.swing.ButtonGroup();
+        jPriceBSIexp2B = new javax.swing.JLabel();
+        jPriceBSIexp1E = new javax.swing.JLabel();
+        jPriceKAIexpB2 = new javax.swing.JLabel();
+        jPriceKAIexp1E = new javax.swing.JLabel();
+        jTrainCodeBSIexp1E = new javax.swing.JLabel();
+        jTrainCodeBSIexp2B = new javax.swing.JLabel();
+        jTrainCodeKAIexp1B = new javax.swing.JLabel();
+        jTrainCodeKAIexp1E = new javax.swing.JLabel();
         btnHelp = new javax.swing.JButton();
-        btnHome = new javax.swing.JButton();
+        btnNext = new javax.swing.JButton();
         btnBooked = new javax.swing.JButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
-        jRadioButton5 = new javax.swing.JRadioButton();
-        jRadioButton6 = new javax.swing.JRadioButton();
-        jRadioButton7 = new javax.swing.JRadioButton();
-        jRadioButton8 = new javax.swing.JRadioButton();
-        jRadioButton9 = new javax.swing.JRadioButton();
+        jRadioBandung = new javax.swing.JRadioButton();
+        jRadioSurabaya = new javax.swing.JRadioButton();
+        jRadioJatinegara = new javax.swing.JRadioButton();
+        jRadioBlitar = new javax.swing.JRadioButton();
+        jRadioJogjakarta = new javax.swing.JRadioButton();
+        jRadioMalang = new javax.swing.JRadioButton();
+        jRadioBSIexp2B = new javax.swing.JRadioButton();
+        jRadioBSIexp1E = new javax.swing.JRadioButton();
+        jRadioKAIexp2B = new javax.swing.JRadioButton();
+        jRadioKAIexp1E = new javax.swing.JRadioButton();
+        btnHome = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -56,55 +90,153 @@ public class jHomePage extends javax.swing.JFrame {
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPriceBSIexp2B.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPriceBSIexp2B.setForeground(new java.awt.Color(0, 0, 0));
+        jPriceBSIexp2B.setText("0");
+        getContentPane().add(jPriceBSIexp2B, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 460, 20, -1));
+
+        jPriceBSIexp1E.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPriceBSIexp1E.setForeground(new java.awt.Color(0, 0, 0));
+        jPriceBSIexp1E.setText("0");
+        getContentPane().add(jPriceBSIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 460, 20, -1));
+
+        jPriceKAIexpB2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPriceKAIexpB2.setForeground(new java.awt.Color(0, 0, 0));
+        jPriceKAIexpB2.setText("0");
+        getContentPane().add(jPriceKAIexpB2, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 746, 20, -1));
+
+        jPriceKAIexp1E.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPriceKAIexp1E.setForeground(new java.awt.Color(0, 0, 0));
+        jPriceKAIexp1E.setText("0");
+        getContentPane().add(jPriceKAIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 746, 20, -1));
+
+        jTrainCodeBSIexp1E.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTrainCodeBSIexp1E.setForeground(new java.awt.Color(0, 0, 0));
+        jTrainCodeBSIexp1E.setText("0");
+        getContentPane().add(jTrainCodeBSIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 485, 65, -1));
+
+        jTrainCodeBSIexp2B.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTrainCodeBSIexp2B.setForeground(new java.awt.Color(0, 0, 0));
+        jTrainCodeBSIexp2B.setText("0");
+        getContentPane().add(jTrainCodeBSIexp2B, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 485, 65, -1));
+
+        jTrainCodeKAIexp1B.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTrainCodeKAIexp1B.setForeground(new java.awt.Color(0, 0, 0));
+        jTrainCodeKAIexp1B.setText("0");
+        getContentPane().add(jTrainCodeKAIexp1B, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 768, 65, -1));
+
+        jTrainCodeKAIexp1E.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jTrainCodeKAIexp1E.setForeground(new java.awt.Color(0, 0, 0));
+        jTrainCodeKAIexp1E.setText("0");
+        getContentPane().add(jTrainCodeKAIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 768, 65, -1));
+
         btnHelp.setBackground(new java.awt.Color(0,0,0,1)
         );
         btnHelp.setContentAreaFilled(false);
         getContentPane().add(btnHelp, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 0, 160, 110));
 
-        btnHome.setBackground(new java.awt.Color(0,0,0,1)
+        btnNext.setBackground(new java.awt.Color(0,0,0,1)
         );
-        btnHome.setContentAreaFilled(false);
-        getContentPane().add(btnHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 3, 160, 110));
+        btnNext.setContentAreaFilled(false);
+        btnNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNextActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnNext, new org.netbeans.lib.awtextra.AbsoluteConstraints(1520, 935, 270, 110));
 
         btnBooked.setBackground(new java.awt.Color(0,0,0,1)
         );
         btnBooked.setContentAreaFilled(false);
         getContentPane().add(btnBooked, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 0, 170, 110));
 
-        RadioGroupRoute.add(jRadioButton1);
-        getContentPane().add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 265, -1, -1));
+        RadioGroupRoute.add(jRadioBandung);
+        jRadioBandung.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioBandungActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jRadioBandung, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton2);
-        getContentPane().add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 265, -1, -1));
+        RadioGroupRoute.add(jRadioSurabaya);
+        getContentPane().add(jRadioSurabaya, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton3);
-        getContentPane().add(jRadioButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 265, -1, -1));
+        RadioGroupRoute.add(jRadioJatinegara);
+        getContentPane().add(jRadioJatinegara, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton4);
-        getContentPane().add(jRadioButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 265, -1, -1));
+        RadioGroupRoute.add(jRadioBlitar);
+        getContentPane().add(jRadioBlitar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton5);
-        getContentPane().add(jRadioButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(1070, 265, -1, -1));
+        RadioGroupRoute.add(jRadioJogjakarta);
+        getContentPane().add(jRadioJogjakarta, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton6);
-        getContentPane().add(jRadioButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 265, -1, -1));
+        RadioGroupRoute.add(jRadioMalang);
+        getContentPane().add(jRadioMalang, new org.netbeans.lib.awtextra.AbsoluteConstraints(1370, 270, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton7);
-        getContentPane().add(jRadioButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1520, 265, -1, -1));
+        RadioGroupClassTrain.add(jRadioBSIexp2B);
+        getContentPane().add(jRadioBSIexp2B, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 500, -1, -1));
 
-        RadioGroupRoute.add(jRadioButton8);
-        getContentPane().add(jRadioButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1380, 265, -1, -1));
+        RadioGroupClassTrain.add(jRadioBSIexp1E);
+        getContentPane().add(jRadioBSIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 500, -1, -1));
 
-        jRadioButton9.setText("jRadioButton9");
-        getContentPane().add(jRadioButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 500, -1, -1));
+        RadioGroupClassTrain.add(jRadioKAIexp2B);
+        getContentPane().add(jRadioKAIexp2B, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 780, -1, -1));
+
+        RadioGroupClassTrain.add(jRadioKAIexp1E);
+        getContentPane().add(jRadioKAIexp1E, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 780, -1, -1));
+
+        btnHome.setBackground(new java.awt.Color(0,0,0,1)
+        );
+        btnHome.setContentAreaFilled(false);
+        getContentPane().add(btnHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 3, 160, 110));
 
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/HomePage.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/HomePageA.png"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 0, 1720, 1110));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
+        String selectedRuteDariForm = null;
+        // Loop untuk mendapatkan action command dari rute yang dipilih
+        for (Enumeration<AbstractButton> buttons = RadioGroupRoute.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                selectedRuteDariForm = button.getActionCommand(); // Menggunakan getActionCommand()
+                break;
+            }
+        }
+
+        String selectedKelasKeretaDariForm = null;
+        // Loop untuk mendapatkan action command dari kelas kereta yang dipilih
+        for (Enumeration<AbstractButton> buttons = RadioGroupClassTrain.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                selectedKelasKeretaDariForm = button.getActionCommand(); // Menggunakan getActionCommand()
+                break;
+            }
+        }
+
+        // Validasi
+        if (selectedRuteDariForm == null || selectedKelasKeretaDariForm == null) {
+            JOptionPane.showMessageDialog(this, "Pilih dulu Rute dan Kelas Kereta.");
+        } else {
+            // Sekarang selectedRuteDariForm akan berisi nilai seperti "RUTE_BANDUNG"
+            // dan selectedKelasKeretaDariForm akan berisi nilai seperti "KELAS_BSI_EXP1_E"
+            System.out.println("Action Command Rute Dipilih: " + selectedRuteDariForm);
+            System.out.println("Action Command Kelas Dipilih: " + selectedKelasKeretaDariForm);
+
+//            new jPassangerForm(selectedRuteDariForm, selectedKelasKeretaDariForm).setVisible(true);
+            new jAvailabelDate().setVisible(true);
+            // this.dispose();
+        }
+    }//GEN-LAST:event_btnNextActionPerformed
+
+    private void jRadioBandungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioBandungActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioBandungActionPerformed
 
     /**
      * @param args the command line arguments
@@ -143,19 +275,30 @@ public class jHomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup RadioGroupClassTrain;
     private javax.swing.ButtonGroup RadioGroupRoute;
     private javax.swing.JButton btnBooked;
     private javax.swing.JButton btnHelp;
     private javax.swing.JButton btnHome;
+    private javax.swing.JButton btnNext;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JRadioButton jRadioButton5;
-    private javax.swing.JRadioButton jRadioButton6;
-    private javax.swing.JRadioButton jRadioButton7;
-    private javax.swing.JRadioButton jRadioButton8;
-    private javax.swing.JRadioButton jRadioButton9;
+    private javax.swing.JLabel jPriceBSIexp1E;
+    private javax.swing.JLabel jPriceBSIexp2B;
+    private javax.swing.JLabel jPriceKAIexp1E;
+    private javax.swing.JLabel jPriceKAIexpB2;
+    private javax.swing.JRadioButton jRadioBSIexp1E;
+    private javax.swing.JRadioButton jRadioBSIexp2B;
+    private javax.swing.JRadioButton jRadioBandung;
+    private javax.swing.JRadioButton jRadioBlitar;
+    private javax.swing.JRadioButton jRadioJatinegara;
+    private javax.swing.JRadioButton jRadioJogjakarta;
+    private javax.swing.JRadioButton jRadioKAIexp1E;
+    private javax.swing.JRadioButton jRadioKAIexp2B;
+    private javax.swing.JRadioButton jRadioMalang;
+    private javax.swing.JRadioButton jRadioSurabaya;
+    private javax.swing.JLabel jTrainCodeBSIexp1E;
+    private javax.swing.JLabel jTrainCodeBSIexp2B;
+    private javax.swing.JLabel jTrainCodeKAIexp1B;
+    private javax.swing.JLabel jTrainCodeKAIexp1E;
     // End of variables declaration//GEN-END:variables
 }

@@ -47,7 +47,13 @@ public class loginPage extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(1920, 1080));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jTuser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTuser.setBorder(null);
         getContentPane().add(jTuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(718, 432, 590, 80));
+
+        jtPass.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jtPass.setBorder(null);
         getContentPane().add(jtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(718, 546, 590, 80));
 
         jButton1.setBackground(new java.awt.Color(0,0,0,1)
@@ -95,9 +101,9 @@ public class loginPage extends javax.swing.JFrame {
                 ResultSet rs = pst.executeQuery();
 
                 if (rs.next()) {
-                    JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat datang, " + rs.getString("full_name"));
+                    JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat datang, " + rs.getString("fullname"));
 
-                    new jHomePage().setVisible(true); // Pindah ke halaman utama
+                    new jAvailabelDate().setVisible(true); // Pindah ke halaman utama
                     this.dispose(); // Tutup jForm
                 } else {
                     JOptionPane.showMessageDialog(this, "Username atau password salah");
