@@ -1,12 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package kresika;
 
+import java.awt.Component;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
-import java.sql.*;
+import kresika.jPassangerForm; // Pastikan import ini ada
 
 /**
  *
@@ -16,42 +23,55 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(jAvailabelDate.class.getName());
 
+    // Variabel untuk menyimpan data yang dipilih dari tabel
+    private String selectedTrainCode = null;
+    private String selectedWaktuBerangkat = null;
+    private String selectedRute = null;
+    private Double selectedHarga = 0.0;
+    private String selectedNamaKereta = null;
+    private String selectedKodeKelas = null;
+
+    /**
+     * Metode untuk memuat data dari database ke dalam jTable1.
+     */
     private void load_Table() {
         // Membuat objek DefaultTableModel
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            // Membuat semua sel tidak bisa diedit oleh pengguna
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
         // Menambahkan kolom ke model
         model.addColumn("No.");
         model.addColumn("Nama Kereta");
         model.addColumn("Tujuan");
         model.addColumn("Kelas");
         model.addColumn("Waktu Berangkat");
+        model.addColumn("Harga (Rp)"); // Menambahkan kembali kolom Harga
         model.addColumn("Sisa Kursi");
-//        model.addColumn("Train Code");
+        model.addColumn("Train Code");
 
         try {
             int no = 1;
-            // Query SQL untuk mengambil data dengan JOIN (tanpa harga)
+            // Query SQL untuk mengambil data dengan JOIN, termasuk harga
             String sql = "SELECT t.nama_kereta, r.stasiun_tujuan_nama, tc.kode_kelas, "
-                    + "s.waktu_keberangkatan, s.sisa_kursi "
+                    + "s.waktu_keberangkatan, s.harga, s.sisa_kursi, s.train_code "
                     + "FROM schedules s "
                     + "JOIN trains t ON s.id_kereta = t.id_kereta "
                     + "JOIN routes r ON s.id_rute = r.id_rute "
                     + "JOIN train_classes tc ON s.id_kelas = tc.id_kelas "
                     + "ORDER BY s.waktu_keberangkatan ASC";
 
-            // --- PERUBAHAN DI SINI ---
-            // 1. Panggil metode connect() yang ada di kelas koneksi Anda
             koneksi.connect();
-            // 2. Ambil koneksi dari variabel publik 'con'
             Connection conn = koneksi.con;
-            // --- AKHIR PERUBAHAN ---
 
-            // Pastikan koneksi tidak null sebelum melanjutkan
             if (conn != null) {
                 Statement stm = conn.createStatement();
                 ResultSet res = stm.executeQuery(sql);
 
-                // Mengisi model dengan data dari ResultSet
                 while (res.next()) {
                     model.addRow(new Object[]{
                         no++,
@@ -59,11 +79,17 @@ public class jAvailabelDate extends javax.swing.JFrame {
                         res.getString("stasiun_tujuan_nama"),
                         res.getString("kode_kelas"),
                         res.getString("waktu_keberangkatan"),
-                        res.getInt("sisa_kursi"), //                        res.getString("train_code")
+                        res.getDouble("harga"), // Menambahkan data harga sebagai Double
+                        res.getInt("sisa_kursi"),
+                        res.getString("train_code")
                     });
                 }
-                // Mengatur model yang sudah diisi ke jTable1
                 jTable1.setModel(model);
+
+                // --- PENAMBAHAN KODE UNTUK FORMAT HARGA ---
+                // Mengatur Cell Renderer khusus untuk kolom harga (indeks 5)
+                jTable1.getColumnModel().getColumn(5).setCellRenderer(new CurrencyRenderer());
+
             } else {
                 JOptionPane.showMessageDialog(this, "Koneksi ke database null, tidak dapat memuat data.");
             }
@@ -79,12 +105,39 @@ public class jAvailabelDate extends javax.swing.JFrame {
      */
     public jAvailabelDate() {
         initComponents();
-        // Memanggil metode load_Table() saat form dibuat
         load_Table();
-        // Mengatur properti tambahan untuk tampilan tabel
+
+        // Mengatur properti tampilan tabel
         jTable1.getTableHeader().setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
         jTable1.setRowHeight(25);
         jTable1.setAutoCreateRowSorter(true);
+
+        // --- IMPLEMENTASI SELEKSI BARIS ---
+        // Mengatur agar hanya satu baris yang bisa dipilih pada satu waktu
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Menambahkan listener untuk mendeteksi perubahan seleksi baris
+        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                // Pastikan event tidak sedang dalam proses adjusting (untuk menghindari eksekusi ganda)
+                if (!event.getValueIsAdjusting()) {
+                    // Dapatkan baris yang dipilih
+                    int selectedRow = jTable1.getSelectedRow();
+
+                    // Pastikan ada baris yang benar-benar dipilih
+                    if (selectedRow != -1) {
+                        // Ambil semua data yang diperlukan dari baris yang dipilih
+                        selectedNamaKereta = jTable1.getValueAt(selectedRow, 1).toString();
+                        selectedRute = jTable1.getValueAt(selectedRow, 2).toString();
+                        selectedKodeKelas = jTable1.getValueAt(selectedRow, 3).toString();
+                        selectedWaktuBerangkat = jTable1.getValueAt(selectedRow, 4).toString();
+                        selectedHarga = (Double) jTable1.getValueAt(selectedRow, 5);
+                        selectedTrainCode = jTable1.getValueAt(selectedRow, 7).toString();
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -96,13 +149,21 @@ public class jAvailabelDate extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButtonNext = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         BGround = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1728, 1117));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jButtonNext.setContentAreaFilled(false);
+        jButtonNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNextActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButtonNext, new org.netbeans.lib.awtextra.AbsoluteConstraints(1285, 960, 310, 80));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -125,9 +186,55 @@ public class jAvailabelDate extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNextActionPerformed
+        if (selectedTrainCode == null) {
+            JOptionPane.showMessageDialog(this, "Silakan klik salah satu baris jadwal terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        } else {
+            // --- KODE BARU UNTUK REDIRECT ---
+            // Membuat rute lengkap (Asal - Tujuan)
+            String ruteLengkap = "Tangerang - " + selectedRute;
+
+            // Membuka jPassengerForm dengan data yang dipilih.
+            // Pastikan jPassengerForm memiliki konstruktor yang cocok dengan parameter ini.
+            jPassangerForm passengerForm = new jPassangerForm(
+                    selectedNamaKereta,
+                    ruteLengkap,
+                    selectedKodeKelas,
+                    selectedWaktuBerangkat,
+                    selectedHarga,
+                    selectedTrainCode
+            );
+            passengerForm.setVisible(true);
+            this.dispose();
+
+        }
+    }//GEN-LAST:event_jButtonNextActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    class CurrencyRenderer extends DefaultTableCellRenderer {
+
+        private final NumberFormat formatter = NumberFormat.getIntegerInstance(new Locale("id", "ID"));
+
+        public CurrencyRenderer() {
+            setHorizontalAlignment(javax.swing.SwingConstants.RIGHT); // Meratakan angka ke kanan
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            // Ambil komponen label default
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            // Jika nilai adalah angka, format sebagai mata uang
+            if (value instanceof Number) {
+                setText(formatter.format(value));
+            }
+
+            return c;
+        }
+    }
+
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -147,6 +254,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BGround;
+    private javax.swing.JButton jButtonNext;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables

@@ -12,67 +12,58 @@ import javax.swing.JOptionPane;
  */
 public class jPassangerForm extends javax.swing.JFrame {
 
-    private String ruteDiterima;
-    private String kelasKeretaDiterima;
+    // Variabel untuk menyimpan data yang diterima dari halaman sebelumnya
+    private String namaKeretaDiterima;
+    private String ruteLengkapDiterima;
+    private String kodeKelasDiterima;
+    private String waktuBerangkatDiterima;
+    private double hargaSatuanDiterima;
+    private String trainCodeDiterima;
 
     /**
      * Creates new form jPassangerForm
      */
-    public jPassangerForm(String rutePilihan, String kelasPilihan) {
-        this.ruteDiterima = rutePilihan;
-        this.kelasKeretaDiterima = kelasPilihan;
-        // if (tanggalPilihan != null) { this.tanggalDiterima = tanggalPilihan; }
-
-        initComponents(); // Sangat penting untuk memanggil ini pertama di konstruktor
-
-        // Mengatur nilai default atau yang diterima ke komponen GUI
-        if (jRoute != null) { // Periksa apakah jRoute sudah diinisialisasi oleh initComponents()
-            jRoute.setText(this.ruteDiterima); //
-            // jRoute.setEditable(false); // Anda sudah mengatur ini di initComponents()
-        }
-        
-//        if (jSeatNumber != null){
-//            jSeatNumber.setText(rutePilihan);
-//        }
-
-
-        // if (jDate != null && this.tanggalDiterima != null) {
-        //    jDate.setText(this.tanggalDiterima);
-        //    // jDate.setEditable(false); // Anda sudah mengatur ini di initComponents()
-        // }
-
-        // Menambahkan ActionListener untuk tombol yang belum diatur oleh GUI Builder (jika ada)
-        // jButtonCheckout sudah memiliki listener dari initComponents()
-        System.out.println("Form Penumpang Dibuka untuk Rute: " + this.ruteDiterima + ", Kelas: " + this.kelasKeretaDiterima); //
-        // Ubah default close operation agar tidak menutup seluruh aplikasi
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Detail Penumpang"); // Judul window yang lebih sesuai
-
-    }
-
     public jPassangerForm() {
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Detail Penumpang (Mode Tes)");
-        System.out.println("Form Penumpang dibuka tanpa data rute/kelas (dari konstruktor default).");
-        // Anda mungkin ingin menonaktifkan beberapa field atau menampilkan pesan
+
         if (jRoute != null) {
             jRoute.setText("Rute Belum Dipilih");
         }
         if (jDate != null) {
             jDate.setText("Tanggal Belum Dipilih");
         }
-        // Tambahkan listener juga di sini jika diperlukan (misalnya untuk tombol back)
-        if (jButtonBack != null) {
-            for (java.awt.event.ActionListener al : jButtonBack.getActionListeners()) {
-                jButtonBack.removeActionListener(al);
-            }
-            jButtonBack.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jButtonBackActionPerformed(evt);
-                }
-            });
+    }
+
+    public jPassangerForm(String namaKereta, String ruteLengkap, String kodeKelas, String waktuBerangkat, double hargaSatuan, String trainCode) {
+        initComponents(); // Inisialisasi semua komponen GUI terlebih dahulu
+
+        // Simpan data yang diterima ke variabel instance
+        this.namaKeretaDiterima = namaKereta;
+        this.ruteLengkapDiterima = ruteLengkap;
+        this.kodeKelasDiterima = kodeKelas;
+        this.waktuBerangkatDiterima = waktuBerangkat;
+        this.hargaSatuanDiterima = hargaSatuan;
+        this.trainCodeDiterima = trainCode;
+
+        // --- MENGGUNAKAN DATA YANG DITERIMA ---
+        // Mengatur nilai yang diterima ke komponen GUI yang sesuai
+        if (jRoute != null) {
+            jRoute.setText(this.ruteLengkapDiterima);
         }
+
+        if (jDate != null) {
+            // Ekstrak hanya bagian tanggal (YYYY-MM-DD) dari timestamp
+            String tanggalSaja = this.waktuBerangkatDiterima.split(" ")[0];
+            jDate.setText(tanggalSaja);
+        }
+
+        // (Anda juga bisa menampilkan nama kereta, kelas, harga, dll di JLabel jika ada)
+        // Contoh: jLabelTrainName.setText(this.namaKeretaDiterima);
+        // Atur properti window
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Formulir Data Penumpang");
     }
 
     /**
@@ -84,24 +75,17 @@ public class jPassangerForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jSeatNumber = new javax.swing.JTextField();
         jName = new javax.swing.JTextField();
         jEmail = new javax.swing.JTextField();
-        jNumberTicket = new javax.swing.JTextField();
         jRoute = new javax.swing.JTextField();
         jDate = new javax.swing.JTextField();
+        jSpinnerNumberofTicket = new javax.swing.JSpinner();
         jButtonBack = new javax.swing.JButton();
         jButtonCO = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        jBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jSeatNumber.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jSeatNumber.setForeground(new java.awt.Color(255, 51, 51));
-        jSeatNumber.setBorder(null);
-        jSeatNumber.setOpaque(true);
-        getContentPane().add(jSeatNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 692, 320, 40));
 
         jName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jName.setBorder(null);
@@ -112,11 +96,6 @@ public class jPassangerForm extends javax.swing.JFrame {
         jEmail.setBorder(null);
         jEmail.setOpaque(true);
         getContentPane().add(jEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 463, 830, 40));
-
-        jNumberTicket.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jNumberTicket.setBorder(null);
-        jNumberTicket.setOpaque(true);
-        getContentPane().add(jNumberTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 691, 410, 40));
 
         jRoute.setEditable(false);
         jRoute.setBackground(new java.awt.Color(255, 255, 255));
@@ -139,6 +118,10 @@ public class jPassangerForm extends javax.swing.JFrame {
         jDate.setOpaque(true);
         getContentPane().add(jDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 578, 410, 40));
 
+        jSpinnerNumberofTicket.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        jSpinnerNumberofTicket.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        getContentPane().add(jSpinnerNumberofTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 690, 250, 40));
+
         jButtonBack.setContentAreaFilled(false);
         jButtonBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,8 +138,8 @@ public class jPassangerForm extends javax.swing.JFrame {
         });
         getContentPane().add(jButtonCO, new org.netbeans.lib.awtextra.AbsoluteConstraints(1285, 953, 320, 80));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PassengerForm.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Passenger FormB.png"))); // NOI18N
+        getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -164,9 +147,9 @@ public class jPassangerForm extends javax.swing.JFrame {
 
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
         System.out.println("Tombol Back diklik.");
-        // Logika untuk kembali ke jHomePage atau menutup form ini
-        new jHomePage().setVisible(true); // Jika ingin membuka instance baru jHomePage
-        this.dispose();
+        // Logika untuk kembali
+        // new jHomePage().setVisible(true); // Membuka home
+        this.dispose(); // Menutup form ini
     }//GEN-LAST:event_jButtonBackActionPerformed
 
     private void jButtonCOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCOActionPerformed
@@ -175,17 +158,11 @@ public class jPassangerForm extends javax.swing.JFrame {
         // 1. Ambil data dari field
         String nama = jName.getText().trim();
         String email = jEmail.getText().trim();
-        // String tanggal = jDate.getText().trim(); // jDate tidak bisa diedit, nilainya dari ruteDiterima atau tanggalDiterima
-        String nomorKursi = jSeatNumber.getText().trim(); // jSeatNumber mungkin perlu dibuat editable atau diisi otomatis
-        String jumlahTiketStr = jNumberTicket.getText().trim();
+        int jumlahTiket = (Integer) jSpinnerNumberofTicket.getValue(); // Mengambil nilai dari JSpinner
 
-        // Data yang sudah ada:
-        // this.ruteDiterima
-        // this.kelasKeretaDiterima
-        // this.tanggalDiterima (jika Anda menambahkannya)
-        // 2. Validasi
-        if (nama.isEmpty() || email.isEmpty() || jumlahTiketStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nama, Email, dan Jumlah Tiket wajib diisi!", "Input Tidak Lengkap", JOptionPane.WARNING_MESSAGE);
+        // 2. Validasi Input
+        if (nama.isEmpty() || email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nama dan Email wajib diisi!", "Input Tidak Lengkap", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -194,35 +171,27 @@ public class jPassangerForm extends javax.swing.JFrame {
             return;
         }
 
-        int jumlahTiket;
-        try {
-            jumlahTiket = Integer.parseInt(jumlahTiketStr);
-            if (jumlahTiket <= 0) {
-                JOptionPane.showMessageDialog(this, "Jumlah tiket harus lebih dari 0!", "Input Salah", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah tiket harus berupa angka!", "Input Salah", JOptionPane.ERROR_MESSAGE);
+        if (jumlahTiket <= 0) {
+            JOptionPane.showMessageDialog(this, "Jumlah tiket harus lebih dari 0!", "Input Salah", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // (Tambahkan validasi lain jika perlu: nomor kursi, dll.)
-        // 3. Proses data (misalnya, simpan ke database atau tampilkan ringkasan)
-        System.out.println("Data Pemesanan:");
-        System.out.println("Nama: " + nama);
-        System.out.println("Email: " + email);
-        System.out.println("Rute: " + this.ruteDiterima);
-        System.out.println("Kelas: " + this.kelasKeretaDiterima);
-        System.out.println("Tanggal: " + jDate.getText()); // Ambil dari field jDate yang sudah di-set
-        System.out.println("Nomor Kursi: " + (nomorKursi.isEmpty() ? "Belum dipilih/otomatis" : nomorKursi));
-        System.out.println("Jumlah Tiket: " + jumlahTiket);
+        // 3. Proses data (misalnya, tampilkan ringkasan sebelum simpan ke DB)
+        double totalHarga = jumlahTiket * this.hargaSatuanDiterima;
 
-        JOptionPane.showMessageDialog(this, "Data pemesanan (lihat konsol). Lanjutkan ke proses berikutnya.", "Checkout Berhasil (Simulasi)", JOptionPane.INFORMATION_MESSAGE);
+        jPayment paymentForm = new jPayment(
+                nama,
+                email,
+                jumlahTiket,
+                totalHarga,
+                this.namaKeretaDiterima,
+                this.ruteLengkapDiterima,
+                this.waktuBerangkatDiterima,
+                this.kodeKelasDiterima
+        );
 
-        // Contoh: pindah ke form konfirmasi
-        // jConfirmationForm confirmForm = new jConfirmationForm(dataPemesanan);
-        // confirmForm.setVisible(true);
-        // this.dispose();
+        paymentForm.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButtonCOActionPerformed
 
     private void jRouteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRouteActionPerformed
@@ -285,14 +254,13 @@ public class jPassangerForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jBackground;
     private javax.swing.JButton jButtonBack;
     private javax.swing.JButton jButtonCO;
     private javax.swing.JTextField jDate;
     private javax.swing.JTextField jEmail;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JTextField jName;
-    private javax.swing.JTextField jNumberTicket;
     private javax.swing.JTextField jRoute;
-    private javax.swing.JTextField jSeatNumber;
+    private javax.swing.JSpinner jSpinnerNumberofTicket;
     // End of variables declaration//GEN-END:variables
 }
