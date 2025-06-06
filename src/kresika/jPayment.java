@@ -49,15 +49,24 @@ public class jPayment extends javax.swing.JFrame {
         this.totalHargaDiterima = totalHarga;
         this.trainCodeDiterima = trainCode;
 
+
         // Tampilkan data di UI
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         jName.setText(this.namaDiterima);
         jEmail.setText(this.emailDiterima);
         jNumberTicket.setText(String.valueOf(this.jumlahTiketDiterima));
         jSeatClass.setText(kelas);
-        jTujuan1.setText(rute);
+        if (rute != null && rute.contains(" - ")) {
+            // Memisahkan string berdasarkan " - " dan mengambil bagian kedua (indeks 1)
+            String tujuanSaja = rute.split(" - ")[1].trim();
+            jTujuan1.setText(tujuanSaja);
+        } else {
+            // Fallback jika format rute tidak seperti yang diharapkan
+            jTujuan1.setText(rute);
+        }
         jTotalPayment.setText(formatter.format(this.totalHargaDiterima));
         jChangeDue.setText("Rp 0");
+        jClassTicket.setText(namaKereta);
 
         // Logika kembalian otomatis
         addCashReceivedListener();
@@ -122,52 +131,54 @@ public class jPayment extends javax.swing.JFrame {
         jTujuan1 = new javax.swing.JLabel();
         jBack = new javax.swing.JButton();
         jPayBtn = new javax.swing.JButton();
+        jClassTicket = new javax.swing.JLabel();
         jBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTotalPayment.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTotalPayment.setFont(new java.awt.Font("Baloo Da 2", 1, 36)); // NOI18N
         jTotalPayment.setText("jLabel2");
         jTotalPayment.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        getContentPane().add(jTotalPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 500, 240, 30));
+        getContentPane().add(jTotalPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 480, 240, 50));
 
-        jName.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jName.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jName.setText("jLabel2");
         jName.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        getContentPane().add(jName, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 330, 30));
+        getContentPane().add(jName, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 290, 330, 30));
 
-        jNumberTicket.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jNumberTicket.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jNumberTicket.setText("jLabel2");
         jNumberTicket.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        getContentPane().add(jNumberTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 300, 330, 30));
+        getContentPane().add(jNumberTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 290, 330, 30));
 
-        jEmail.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jEmail.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jEmail.setText("jLabel2");
         jEmail.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        getContentPane().add(jEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 350, 330, 30));
+        getContentPane().add(jEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 350, 330, -1));
 
-        jSeatClass.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jSeatClass.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jSeatClass.setText("jLabel2");
         jSeatClass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         getContentPane().add(jSeatClass, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 350, 330, 30));
 
-        jChangeDue.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jChangeDue.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jChangeDue.setText("jLabel2");
         jChangeDue.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         getContentPane().add(jChangeDue, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 750, 500, 70));
-        getContentPane().add(jChashReceived, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 752, 320, 90));
+        getContentPane().add(jChashReceived, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 752, 320, 40));
 
-        jTujuan1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTujuan1.setFont(new java.awt.Font("Baloo Da 2", 1, 36)); // NOI18N
         jTujuan1.setText("jLabel2");
         jTujuan1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        getContentPane().add(jTujuan1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 500, 240, 30));
+        getContentPane().add(jTujuan1, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 480, 240, 60));
 
         jBack.setContentAreaFilled(false);
-        jBack.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         getContentPane().add(jBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 930, 330, 100));
 
         jPayBtn.setContentAreaFilled(false);
+        jPayBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPayBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jPayBtnActionPerformed(evt);
@@ -175,7 +186,11 @@ public class jPayment extends javax.swing.JFrame {
         });
         getContentPane().add(jPayBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1260, 933, 350, 100));
 
-        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PaymentB.png"))); // NOI18N
+        jClassTicket.setFont(new java.awt.Font("Baloo Da 2", 1, 36)); // NOI18N
+        jClassTicket.setText("jLabel1");
+        getContentPane().add(jClassTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 200, 200, 40));
+
+        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PaymentD.png"))); // NOI18N
         getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
@@ -247,7 +262,7 @@ public class jPayment extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Payment Successful!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
             // 7. Tutup form dan kembali ke halaman utama
-            // new jHomePage().setVisible(true); // Ganti dengan halaman yang sesuai
+            new jAvailabelDate().setVisible(true); // Ganti dengan halaman yang sesuai
             this.dispose();
 
         } catch (SQLException e) {
@@ -303,6 +318,7 @@ public class jPayment extends javax.swing.JFrame {
     private javax.swing.JLabel jBackground;
     private javax.swing.JLabel jChangeDue;
     private javax.swing.JTextField jChashReceived;
+    private javax.swing.JLabel jClassTicket;
     private javax.swing.JLabel jEmail;
     private javax.swing.JLabel jName;
     private javax.swing.JLabel jNumberTicket;

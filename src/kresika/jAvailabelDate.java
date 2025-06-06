@@ -158,6 +158,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButtonNext.setContentAreaFilled(false);
+        jButtonNext.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonNextActionPerformed(evt);
@@ -165,6 +166,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
         });
         getContentPane().add(jButtonNext, new org.netbeans.lib.awtextra.AbsoluteConstraints(1285, 960, 310, 80));
 
+        jTable1.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -180,7 +182,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(152, 197, 1430, 730));
 
-        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available date.png"))); // NOI18N
+        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available dateA.png"))); // NOI18N
         getContentPane().add(BGround, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();

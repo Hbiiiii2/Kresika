@@ -41,36 +41,37 @@ public class loginPage extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(1920, 1080));
-        setMinimumSize(new java.awt.Dimension(1920, 1080));
+        setMaximumSize(new java.awt.Dimension(1728, 1117));
+        setMinimumSize(new java.awt.Dimension(1728, 1117));
         setName("LoginPage"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        setPreferredSize(new java.awt.Dimension(1728, 1117));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTuser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTuser.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jTuser.setBorder(null);
-        getContentPane().add(jTuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(718, 432, 590, 80));
+        getContentPane().add(jTuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 430, 590, 80));
 
         jtPass.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jtPass.setBorder(null);
-        getContentPane().add(jtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(718, 546, 590, 80));
+        getContentPane().add(jtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 550, 590, 80));
 
         jButton1.setBackground(new java.awt.Color(0,0,0,1)
         );
         jButton1.setForeground(new java.awt.Color(0,0,0,1)
         );
         jButton1.setContentAreaFilled(false);
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 710, 260, 70));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 710, 260, 70));
 
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/LoginPage.png"))); // NOI18N
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 0, 1720, 1110));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1840, 1110));
 
         pack();
         setLocationRelativeTo(null);

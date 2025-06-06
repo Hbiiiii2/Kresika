@@ -34,6 +34,9 @@ public class jPassangerForm extends javax.swing.JFrame {
         if (jDate != null) {
             jDate.setText("Tanggal Belum Dipilih");
         }
+        if (jSeatClass != null) {
+            jSeatClass.setText("Seat Class belum Dipilih");
+        }
     }
 
     public jPassangerForm(String namaKereta, String ruteLengkap, String kodeKelas, String waktuBerangkat, double hargaSatuan, String trainCode) {
@@ -55,8 +58,12 @@ public class jPassangerForm extends javax.swing.JFrame {
 
         if (jDate != null) {
             // Ekstrak hanya bagian tanggal (YYYY-MM-DD) dari timestamp
-            String tanggalSaja = this.waktuBerangkatDiterima.split(" ")[0];
-            jDate.setText(tanggalSaja);
+//            String tanggalSaja = this.waktuBerangkatDiterima.split(" ")[0];
+            jDate.setText(this.waktuBerangkatDiterima);
+        }
+        
+        if (jSeatClass != null) {
+            jSeatClass.setText(namaKeretaDiterima + " - " + kodeKelas);
         }
 
         // (Anda juga bisa menampilkan nama kereta, kelas, harga, dll di JLabel jika ada)
@@ -78,28 +85,29 @@ public class jPassangerForm extends javax.swing.JFrame {
         jName = new javax.swing.JTextField();
         jEmail = new javax.swing.JTextField();
         jRoute = new javax.swing.JTextField();
-        jDate = new javax.swing.JTextField();
+        jSeatClass = new javax.swing.JTextField();
         jSpinnerNumberofTicket = new javax.swing.JSpinner();
         jButtonBack = new javax.swing.JButton();
         jButtonCO = new javax.swing.JButton();
+        jDate = new javax.swing.JTextField();
         jBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jName.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jName.setBorder(null);
         jName.setOpaque(true);
         getContentPane().add(jName, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 357, 830, 40));
 
-        jEmail.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jEmail.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jEmail.setBorder(null);
         jEmail.setOpaque(true);
         getContentPane().add(jEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 463, 830, 40));
 
         jRoute.setEditable(false);
         jRoute.setBackground(new java.awt.Color(255, 255, 255));
-        jRoute.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jRoute.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jRoute.setForeground(new java.awt.Color(255, 51, 51));
         jRoute.setBorder(null);
         jRoute.setOpaque(true);
@@ -110,19 +118,26 @@ public class jPassangerForm extends javax.swing.JFrame {
         });
         getContentPane().add(jRoute, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 578, 320, 40));
 
-        jDate.setEditable(false);
-        jDate.setBackground(new java.awt.Color(255, 255, 255));
-        jDate.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jDate.setForeground(new java.awt.Color(255, 51, 51));
-        jDate.setBorder(null);
-        jDate.setOpaque(true);
-        getContentPane().add(jDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 578, 410, 40));
+        jSeatClass.setEditable(false);
+        jSeatClass.setBackground(new java.awt.Color(255, 255, 255));
+        jSeatClass.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
+        jSeatClass.setForeground(new java.awt.Color(255, 51, 51));
+        jSeatClass.setBorder(null);
+        jSeatClass.setOpaque(true);
+        jSeatClass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSeatClassActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jSeatClass, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 690, 410, 40));
 
+        jSpinnerNumberofTicket.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jSpinnerNumberofTicket.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         jSpinnerNumberofTicket.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        getContentPane().add(jSpinnerNumberofTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 690, 250, 40));
+        getContentPane().add(jSpinnerNumberofTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 690, 320, 40));
 
         jButtonBack.setContentAreaFilled(false);
+        jButtonBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonBackActionPerformed(evt);
@@ -131,6 +146,7 @@ public class jPassangerForm extends javax.swing.JFrame {
         getContentPane().add(jButtonBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 950, 320, 80));
 
         jButtonCO.setContentAreaFilled(false);
+        jButtonCO.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonCO.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCOActionPerformed(evt);
@@ -138,7 +154,20 @@ public class jPassangerForm extends javax.swing.JFrame {
         });
         getContentPane().add(jButtonCO, new org.netbeans.lib.awtextra.AbsoluteConstraints(1285, 953, 320, 80));
 
-        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Passenger FormB.png"))); // NOI18N
+        jDate.setEditable(false);
+        jDate.setBackground(new java.awt.Color(255, 255, 255));
+        jDate.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
+        jDate.setForeground(new java.awt.Color(255, 51, 51));
+        jDate.setBorder(null);
+        jDate.setOpaque(true);
+        jDate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jDateActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 578, 410, 40));
+
+        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Passenger FormC.png"))); // NOI18N
         getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
@@ -196,8 +225,16 @@ public class jPassangerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCOActionPerformed
 
     private void jRouteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRouteActionPerformed
-        // TODO add your handling code here:
+        new jAvailabelDate().show(true);
     }//GEN-LAST:event_jRouteActionPerformed
+
+    private void jDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDateActionPerformed
+
+    private void jSeatClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSeatClassActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jSeatClassActionPerformed
 
     /**
      * @param args the command line arguments
@@ -262,6 +299,7 @@ public class jPassangerForm extends javax.swing.JFrame {
     private javax.swing.JTextField jEmail;
     private javax.swing.JTextField jName;
     private javax.swing.JTextField jRoute;
+    private javax.swing.JTextField jSeatClass;
     private javax.swing.JSpinner jSpinnerNumberofTicket;
     // End of variables declaration//GEN-END:variables
 }
