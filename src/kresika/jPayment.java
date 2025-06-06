@@ -4,8 +4,11 @@
  */
 package kresika;
 
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.JOptionPane;
@@ -20,6 +23,11 @@ public class jPayment extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(jPayment.class.getName());
     private double totalHargaDiterima;
+    private String namaDiterima;
+    private String emailDiterima;
+    private int jumlahTiketDiterima;
+    private String trainCodeDiterima;
+    private int idJadwalDiterima;
 
     /**
      * Creates new form jPayment
@@ -28,35 +36,36 @@ public class jPayment extends javax.swing.JFrame {
         initComponents();
         setTitle("Rincian Pembayaran (No Data)");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        jChangeDue.setText("Rp 0"); // Inisialisasi awal
+        jChangeDue.setText("Rp 0");
     }
 
-    public jPayment(String nama, String email, int jumlahTiket, double totalHarga, String namaKereta, String rute, String waktuBerangkat, String kelas) {
+    public jPayment(String nama, String email, int jumlahTiket, double totalHarga, String namaKereta, String rute, String waktuBerangkat, String kelas, String trainCode) {
         initComponents(); // Inisialisasi komponen UI
 
-        // Simpan total harga untuk perhitungan kembalian
+        // Simpan data yang diterima
+        this.namaDiterima = nama;
+        this.emailDiterima = email;
+        this.jumlahTiketDiterima = jumlahTiket;
         this.totalHargaDiterima = totalHarga;
+        this.trainCodeDiterima = trainCode;
 
-        // --- TAMPILKAN DATA YANG DITERIMA DI UI ---
-        // Membuat formatter untuk mata uang Indonesia
+        // Tampilkan data di UI
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-
-        // Mengisi semua JLabel dengan data yang diterima
-        jName.setText(nama);
-        jEmail.setText(email);
-        jNumberTicket.setText(String.valueOf(jumlahTiket));
+        jName.setText(this.namaDiterima);
+        jEmail.setText(this.emailDiterima);
+        jNumberTicket.setText(String.valueOf(this.jumlahTiketDiterima));
         jSeatClass.setText(kelas);
-        jTujuan1.setText(rute); // Menggunakan jTujuan1 untuk menampilkan rute
+        jTujuan1.setText(rute);
         jTotalPayment.setText(formatter.format(this.totalHargaDiterima));
-        jChangeDue.setText("Rp 0"); // Inisialisasi awal
+        jChangeDue.setText("Rp 0");
 
-        // --- LOGIKA KEMBALIAN OTOMATIS ---
+        // Logika kembalian otomatis
         addCashReceivedListener();
 
         // Atur properti window
         setTitle("Rincian Pembayaran");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null); // Menengahkan window
+        setLocationRelativeTo(null);
     }
 
     private void addCashReceivedListener() {
@@ -84,17 +93,12 @@ public class jPayment extends javax.swing.JFrame {
             jChangeDue.setText("Rp 0");
             return;
         }
-
         try {
             double cashReceived = Double.parseDouble(cashText);
             double changeDue = cashReceived - this.totalHargaDiterima;
-
-            // Format kembalian ke format mata uang
             NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
             jChangeDue.setText(formatter.format(changeDue));
-
         } catch (NumberFormatException ex) {
-            // Jika input bukan angka, kembalian dianggap 0 atau tampilkan pesan error
             jChangeDue.setText("Input tidak valid");
         }
     }
@@ -179,7 +183,94 @@ public class jPayment extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jPayBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPayBtnActionPerformed
-        // TODO add your handling code here:
+        // 1. Validasi input uang tunai
+        double cashReceived;
+        try {
+            cashReceived = Double.parseDouble(jChashReceived.getText());
+            if (cashReceived < this.totalHargaDiterima) {
+                JOptionPane.showMessageDialog(this, "Uang tunai yang diterima kurang dari total pembayaran!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Input uang tunai tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Connection conn = null;
+        try {
+            // 2. Dapatkan koneksi dan mulai transaksi
+            koneksi.connect();
+            conn = koneksi.con;
+            conn.setAutoCommit(false); // Memulai mode transaksi
+
+            // 3. Cari id_jadwal berdasarkan train_code
+            String sqlGetJadwal = "SELECT id_jadwal FROM schedules WHERE train_code = '" + this.trainCodeDiterima + "'";
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery(sqlGetJadwal);
+            if (rs.next()) {
+                this.idJadwalDiterima = rs.getInt("id_jadwal");
+            } else {
+                throw new SQLException("Jadwal dengan Train Code " + this.trainCodeDiterima + " tidak ditemukan.");
+            }
+
+            // 4. Kurangi sisa kursi di tabel schedules
+            String sqlUpdateKursi = "UPDATE schedules SET sisa_kursi = sisa_kursi - ? WHERE id_jadwal = ? AND sisa_kursi >= ?";
+            PreparedStatement pstUpdate = conn.prepareStatement(sqlUpdateKursi);
+            pstUpdate.setInt(1, this.jumlahTiketDiterima);
+            pstUpdate.setInt(2, this.idJadwalDiterima);
+            pstUpdate.setInt(3, this.jumlahTiketDiterima);
+            int rowsAffected = pstUpdate.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Gagal mengupdate kursi, kemungkinan kursi tidak mencukupi.");
+            }
+
+            // 5. Simpan data pemesanan ke tabel bookings
+            String sqlInsertBooking = "INSERT INTO bookings (kode_pemesanan, id_jadwal, nama_pemesan, email_pemesan, jumlah_tiket, total_harga, barcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement pstInsert = conn.prepareStatement(sqlInsertBooking);
+
+            String kodePemesanan = "KRSK-" + System.currentTimeMillis();
+            String dataBarcode = kodePemesanan + "-" + this.trainCodeDiterima; // Membuat data untuk barcode
+
+            pstInsert.setString(1, kodePemesanan);
+            pstInsert.setInt(2, this.idJadwalDiterima);
+            pstInsert.setString(3, this.namaDiterima);
+            pstInsert.setString(4, this.emailDiterima);
+            pstInsert.setInt(5, this.jumlahTiketDiterima);
+            pstInsert.setDouble(6, this.totalHargaDiterima);
+            pstInsert.setString(7, dataBarcode); // Menyimpan data barcode
+            pstInsert.executeUpdate();
+
+            // Jika semua query berhasil, commit transaksi
+            conn.commit();
+
+            // 6. Tampilkan pop-up sukses
+            JOptionPane.showMessageDialog(this, "Payment Successful!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+
+            // 7. Tutup form dan kembali ke halaman utama
+            // new jHomePage().setVisible(true); // Ganti dengan halaman yang sesuai
+            this.dispose();
+
+        } catch (SQLException e) {
+            // Jika terjadi error, batalkan semua perubahan (rollback)
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException ex) {
+                logger.log(java.util.logging.Level.SEVERE, "Rollback gagal: " + ex.getMessage());
+            }
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } finally {
+            // Kembalikan koneksi ke mode auto-commit
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                }
+            } catch (SQLException ex) {
+                logger.log(java.util.logging.Level.SEVERE, "Gagal mengembalikan auto-commit: " + ex.getMessage());
+            }
+        }
     }//GEN-LAST:event_jPayBtnActionPerformed
 
     /**

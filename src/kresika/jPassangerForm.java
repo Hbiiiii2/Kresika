@@ -187,7 +187,8 @@ public class jPassangerForm extends javax.swing.JFrame {
                 this.namaKeretaDiterima,
                 this.ruteLengkapDiterima,
                 this.waktuBerangkatDiterima,
-                this.kodeKelasDiterima
+                this.kodeKelasDiterima,
+                this.trainCodeDiterima
         );
 
         paymentForm.setVisible(true);
