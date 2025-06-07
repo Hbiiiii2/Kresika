@@ -19,6 +19,7 @@ import javax.swing.event.DocumentListener;
 // Import untuk File I/O
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 // Import untuk pembuatan PDF dengan Apache PDFBox
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -34,9 +35,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.oned.Code128Writer;
+import com.google.zxing.qrcode.QRCodeWriter;
 
-//Import untuk Pengiriman email dan dengan Javamail
+// Import untuk Pengiriman Email dengan JavaMail (disimpan untuk simulasi)
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -306,22 +307,9 @@ public class jPayment extends javax.swing.JFrame {
 
             conn.commit();
 
-            // --- Panggil metode generatePdfReceipt dengan SEMUA data yang diperlukan ---
-            generatePdfReceipt(
-                    pdfFilePath,
-                    kodePemesanan,
-                    dataBarcode,
-                    this.namaDiterima,
-                    this.emailDiterima,
-                    this.namaKeretaDiterima,
-                    this.ruteDiterima,
-                    this.waktuBerangkatDiterima,
-                    this.kelasDiterima,
-                    this.jumlahTiketDiterima,
-                    this.totalHargaDiterima
-            );
+            generatePdfReceipt(pdfFilePath, kodePemesanan, dataBarcode);
 
-            // Mengirim email setelah PDF berhasil dibuat
+            // --- MENGIRIM EMAIL DI SINI (LOGIKA DIAKTIFKAN) ---
             sendEmailWithAttachment(this.emailDiterima, "E-Tiket Kresika Anda - " + kodePemesanan, "Terima kasih telah melakukan pemesanan. Berikut adalah e-tiket Anda.", pdfFilePath);
 
             JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan dan dikirim ke email Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
@@ -356,67 +344,91 @@ public class jPayment extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jPayBtnActionPerformed
 
-    private void generatePdfReceipt(String filePath, String bookingCode, String barcodeData, String nama, String email, String namaKereta, String rute, String waktuBerangkat, String kelas, int jumlahTiket, double totalHarga) throws IOException, Exception {
+    private void generatePdfReceipt(String filePath, String bookingCode, String barcodeData) throws IOException, Exception {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
-            float yStart = page.getMediaBox().getUpperRightY() - 50;
+            float yPosition = page.getMediaBox().getUpperRightY() - 50;
             float margin = 50;
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+
+                // 1. Tambahkan Logo Kresika
+                try (InputStream in = getClass().getResourceAsStream("/image/logo_kresika.png")) {
+                    if (in == null) {
+                        System.err.println("Logo tidak ditemukan! Pastikan file logo ada di /image/");
+                    } else {
+                        PDImageXObject logoImage = PDImageXObject.createFromByteArray(document, in.readAllBytes(), "logo");
+                        float logoWidth = 100;
+                        float logoHeight = (logoWidth / logoImage.getWidth()) * logoImage.getHeight();
+                        contentStream.drawImage(logoImage, margin, yPosition - logoHeight + 20, logoWidth, logoHeight);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Gagal memuat logo: " + e.getMessage());
+                }
+
+                // 2. Tambahkan Judul
                 contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
-                contentStream.newLineAtOffset(margin + 200, yStart);
-                contentStream.showText("E-Tiket Kresika");
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 20);
+                contentStream.newLineAtOffset(margin + 180, yPosition);
+                contentStream.showText("E-TIKET PERJALANAN");
                 contentStream.endText();
 
-                float tableYstart = yStart - 40;
-                // Panggil drawTable dengan parameter yang relevan
-                drawTable(contentStream, tableYstart, margin, bookingCode, nama, email, namaKereta, rute, waktuBerangkat, kelas, jumlahTiket, totalHarga);
+                yPosition -= 50;
 
-                BufferedImage barcodeBufferedImage = createBarcodeImage(barcodeData, 300, 70);
-                PDImageXObject pdImage = LosslessFactory.createFromImage(document, barcodeBufferedImage);
-                contentStream.drawImage(pdImage, margin + 125, tableYstart - 200, pdImage.getWidth(), pdImage.getHeight());
+                // 3. Gambar garis pemisah
+                contentStream.setStrokingColor(java.awt.Color.GRAY);
+                contentStream.setLineWidth(1);
+                contentStream.moveTo(margin, yPosition);
+                contentStream.lineTo(page.getMediaBox().getWidth() - margin, yPosition);
+                contentStream.stroke();
+                yPosition -= 30;
+
+                // 4. Detail Pemesanan dan QR Code
+                // Area Kiri: Detail Teks
+                float leftX = margin;
+                float currentY = yPosition;
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Kode Booking", bookingCode);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Nama Pemesan", this.namaDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Kereta", this.namaKeretaDiterima + " (" + this.kelasDiterima + ")");
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Rute", this.ruteDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Waktu Berangkat", this.waktuBerangkatDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Jumlah Tiket", String.valueOf(this.jumlahTiketDiterima) + " Penumpang");
+                currentY -= 10; // Spasi sebelum total
+                drawDetailRow(contentStream, leftX, currentY, "Total Pembayaran", NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(this.totalHargaDiterima));
+
+                // Area Kanan: QR Code
+                BufferedImage qrCodeImage = createQRCodeImage(barcodeData, 150, 150);
+                PDImageXObject pdImage = LosslessFactory.createFromImage(document, qrCodeImage);
+                float qrX = page.getMediaBox().getWidth() - margin - pdImage.getWidth();
+                float qrY = yPosition - pdImage.getHeight() - 20;
+                contentStream.drawImage(pdImage, qrX, qrY, pdImage.getWidth(), pdImage.getHeight());
+
             }
             document.save(filePath);
         }
     }
 
-    private void drawTable(PDPageContentStream contentStream, float y, float margin, String bookingCode, String nama, String email, String namaKereta, String rute, String waktuBerangkat, String kelas, int jumlahTiket, double totalHarga) throws IOException {
-        final float rowHeight = 20f;
-        final float tableWidth = PDRectangle.A4.getWidth() - (2 * margin);
-        final float[] colWidths = {150, tableWidth - 150};
+    private float drawDetailRow(PDPageContentStream contentStream, float x, float y, String label, String value) throws IOException {
+        contentStream.setFont(PDType1Font.HELVETICA, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(x, y);
+        contentStream.showText(label);
+        contentStream.endText();
 
-        String[][] content = {
-            {"Kode Booking", ": " + bookingCode}, {"Nama Pemesan", ": " + nama},
-            {"Email", ": " + email}, {"Kereta", ": " + namaKereta},
-            {"Rute", ": " + rute}, {"Waktu Berangkat", ": " + waktuBerangkat},
-            {"Kelas", ": " + kelas}, {"Jumlah Tiket", ": " + String.valueOf(jumlahTiket)},
-            {"Total Harga", ": " + NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(totalHarga)}
-        };
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(x + 120, y); // Jarak antara label dan value
+        contentStream.showText(": " + value);
+        contentStream.endText();
 
-        float nextY = y;
-        for (String[] row : content) {
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(margin, nextY);
-            contentStream.showText(row[0]);
-            contentStream.endText();
-
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(margin + colWidths[0], nextY);
-            contentStream.showText(row[1]);
-            contentStream.endText();
-
-            nextY -= rowHeight;
-        }
+        return y - 25; // Mengembalikan posisi Y untuk baris selanjutnya
     }
 
-    private BufferedImage createBarcodeImage(String text, int width, int height) throws Exception {
-        Code128Writer barcodeWriter = new Code128Writer();
-        BitMatrix bitMatrix = barcodeWriter.encode(text, BarcodeFormat.CODE_128, width, height);
+    private BufferedImage createQRCodeImage(String text, int width, int height) throws Exception {
+        QRCodeWriter barcodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
@@ -432,15 +444,16 @@ public class jPayment extends javax.swing.JFrame {
 
         // --- KONFIGURASI YANG DIPERBAIKI (STANDAR TLS) ---
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com"); // Server SMTP Gmail
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587"); // Port untuk TLS
-        props.put("mail.smtp.auth", "true"); // Memerlukan autentikasi
-        props.put("mail.smtp.starttls.enable", "true"); // Wajib untuk port 587
-//          props.put("mail.smtp.host", "localhost"); // Mailpit runs locally
-//          props.put("mail.smtp.port", "1025");      // Default Mailpit SMTP port
-//          props.put("mail.smtp.auth", "false");     // No auth needed
-//          props.put("mail.smtp.starttls.enable", "false"); // No TLS needed
+//        props.put("mail.smtp.host", "smtp.gmail.com"); // Server SMTP Gmail
+//        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+//        props.put("mail.smtp.port", "587"); 
+//        props.put("mail.smtp.auth", "true"); 
+//        props.put("mail.smtp.starttls.enable", "true"); 
+
+        props.put("mail.smtp.host", "localhost"); // Mailpit runs locally
+        props.put("mail.smtp.port", "1025");      // Default Mailpit SMTP port
+        props.put("mail.smtp.auth", "false");     // No auth needed
+        props.put("mail.smtp.starttls.enable", "false"); // No TLS needed
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             @Override
