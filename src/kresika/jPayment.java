@@ -4,6 +4,7 @@
  */
 package kresika;
 
+// Import untuk database dan Swing
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,26 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+// Import untuk File I/O
+import java.io.File;
+import java.io.IOException;
+
+// Import untuk pembuatan PDF dengan Apache PDFBox
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import java.awt.image.BufferedImage;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+
+// Import untuk pembuatan Barcode dengan ZXing
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.Code128Writer;
+
 /**
  *
  * @author Administrator
@@ -22,11 +43,16 @@ import javax.swing.event.DocumentListener;
 public class jPayment extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(jPayment.class.getName());
+
     private double totalHargaDiterima;
     private String namaDiterima;
     private String emailDiterima;
     private int jumlahTiketDiterima;
     private String trainCodeDiterima;
+    private String namaKeretaDiterima;
+    private String ruteDiterima;
+    private String waktuBerangkatDiterima;
+    private String kelasDiterima;
     private int idJadwalDiterima;
 
     /**
@@ -47,26 +73,32 @@ public class jPayment extends javax.swing.JFrame {
         this.emailDiterima = email;
         this.jumlahTiketDiterima = jumlahTiket;
         this.totalHargaDiterima = totalHarga;
+        this.namaKeretaDiterima = namaKereta;
+        this.ruteDiterima = rute;
+        this.waktuBerangkatDiterima = waktuBerangkat;
+        this.kelasDiterima = kelas;
         this.trainCodeDiterima = trainCode;
-
 
         // Tampilkan data di UI
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         jName.setText(this.namaDiterima);
         jEmail.setText(this.emailDiterima);
         jNumberTicket.setText(String.valueOf(this.jumlahTiketDiterima));
-        jSeatClass.setText(kelas);
+
+        // --- PERBAIKAN LOGIKA DI SINI ---
+        jSeatClass.setText(this.kelasDiterima);   // Menampilkan kelas di jSeatClass
+        jClassTicket.setText(namaKereta);        // Menampilkan nama kereta di jClassTicket
+
+        // Menampilkan hanya nama stasiun tujuan di jTujuan1
         if (rute != null && rute.contains(" - ")) {
-            // Memisahkan string berdasarkan " - " dan mengambil bagian kedua (indeks 1)
             String tujuanSaja = rute.split(" - ")[1].trim();
             jTujuan1.setText(tujuanSaja);
         } else {
-            // Fallback jika format rute tidak seperti yang diharapkan
             jTujuan1.setText(rute);
         }
+
         jTotalPayment.setText(formatter.format(this.totalHargaDiterima));
         jChangeDue.setText("Rp 0");
-        jClassTicket.setText(namaKereta);
 
         // Logika kembalian otomatis
         addCashReceivedListener();
@@ -203,7 +235,7 @@ public class jPayment extends javax.swing.JFrame {
         try {
             cashReceived = Double.parseDouble(jChashReceived.getText());
             if (cashReceived < this.totalHargaDiterima) {
-                JOptionPane.showMessageDialog(this, "Uang tunai yang diterima kurang dari total pembayaran!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Uang tunai kurang!", "Peringatan", JOptionPane.WARNING_MESSAGE);
                 return;
             }
         } catch (NumberFormatException e) {
@@ -212,81 +244,155 @@ public class jPayment extends javax.swing.JFrame {
         }
 
         Connection conn = null;
+        String kodePemesanan = "KRSK-" + System.currentTimeMillis();
+        String dataBarcode = kodePemesanan + "-" + this.trainCodeDiterima;
+
         try {
-            // 2. Dapatkan koneksi dan mulai transaksi
             koneksi.connect();
             conn = koneksi.con;
-            conn.setAutoCommit(false); // Memulai mode transaksi
+            conn.setAutoCommit(false);
 
-            // 3. Cari id_jadwal berdasarkan train_code
-            String sqlGetJadwal = "SELECT id_jadwal FROM schedules WHERE train_code = '" + this.trainCodeDiterima + "'";
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(sqlGetJadwal);
-            if (rs.next()) {
-                this.idJadwalDiterima = rs.getInt("id_jadwal");
-            } else {
-                throw new SQLException("Jadwal dengan Train Code " + this.trainCodeDiterima + " tidak ditemukan.");
+            String sqlGetJadwal = "SELECT id_jadwal FROM schedules WHERE train_code = ?";
+            try (PreparedStatement pstGetJadwal = conn.prepareStatement(sqlGetJadwal)) {
+                pstGetJadwal.setString(1, this.trainCodeDiterima);
+                try (ResultSet rs = pstGetJadwal.executeQuery()) {
+                    if (rs.next()) {
+                        this.idJadwalDiterima = rs.getInt("id_jadwal");
+                    } else {
+                        throw new SQLException("Jadwal tidak ditemukan.");
+                    }
+                }
             }
 
-            // 4. Kurangi sisa kursi di tabel schedules
             String sqlUpdateKursi = "UPDATE schedules SET sisa_kursi = sisa_kursi - ? WHERE id_jadwal = ? AND sisa_kursi >= ?";
-            PreparedStatement pstUpdate = conn.prepareStatement(sqlUpdateKursi);
-            pstUpdate.setInt(1, this.jumlahTiketDiterima);
-            pstUpdate.setInt(2, this.idJadwalDiterima);
-            pstUpdate.setInt(3, this.jumlahTiketDiterima);
-            int rowsAffected = pstUpdate.executeUpdate();
-            if (rowsAffected == 0) {
-                throw new SQLException("Gagal mengupdate kursi, kemungkinan kursi tidak mencukupi.");
+            try (PreparedStatement pstUpdate = conn.prepareStatement(sqlUpdateKursi)) {
+                pstUpdate.setInt(1, this.jumlahTiketDiterima);
+                pstUpdate.setInt(2, this.idJadwalDiterima);
+                pstUpdate.setInt(3, this.jumlahTiketDiterima);
+                if (pstUpdate.executeUpdate() == 0) {
+                    throw new SQLException("Kursi tidak mencukupi.");
+                }
             }
 
-            // 5. Simpan data pemesanan ke tabel bookings
             String sqlInsertBooking = "INSERT INTO bookings (kode_pemesanan, id_jadwal, nama_pemesan, email_pemesan, jumlah_tiket, total_harga, barcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement pstInsert = conn.prepareStatement(sqlInsertBooking);
+            try (PreparedStatement pstInsert = conn.prepareStatement(sqlInsertBooking)) {
+                pstInsert.setString(1, kodePemesanan);
+                pstInsert.setInt(2, this.idJadwalDiterima);
+                pstInsert.setString(3, this.namaDiterima);
+                pstInsert.setString(4, this.emailDiterima);
+                pstInsert.setInt(5, this.jumlahTiketDiterima);
+                pstInsert.setDouble(6, this.totalHargaDiterima);
+                pstInsert.setString(7, dataBarcode);
+                pstInsert.executeUpdate();
+            }
 
-            String kodePemesanan = "KRSK-" + System.currentTimeMillis();
-            String dataBarcode = kodePemesanan + "-" + this.trainCodeDiterima; // Membuat data untuk barcode
-
-            pstInsert.setString(1, kodePemesanan);
-            pstInsert.setInt(2, this.idJadwalDiterima);
-            pstInsert.setString(3, this.namaDiterima);
-            pstInsert.setString(4, this.emailDiterima);
-            pstInsert.setInt(5, this.jumlahTiketDiterima);
-            pstInsert.setDouble(6, this.totalHargaDiterima);
-            pstInsert.setString(7, dataBarcode); // Menyimpan data barcode
-            pstInsert.executeUpdate();
-
-            // Jika semua query berhasil, commit transaksi
             conn.commit();
 
-            // 6. Tampilkan pop-up sukses
-            JOptionPane.showMessageDialog(this, "Payment Successful!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            generatePdfReceipt(kodePemesanan, dataBarcode);
 
-            // 7. Tutup form dan kembali ke halaman utama
-            new jAvailabelDate().setVisible(true); // Ganti dengan halaman yang sesuai
+            JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan di folder Downloads Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+
+            new jAvailabelDate().setVisible(true);
             this.dispose();
 
         } catch (SQLException e) {
-            // Jika terjadi error, batalkan semua perubahan (rollback)
             try {
                 if (conn != null) {
                     conn.rollback();
                 }
             } catch (SQLException ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Rollback gagal: " + ex.getMessage());
+                logger.log(java.util.logging.Level.SEVERE, "Rollback gagal.", ex);
             }
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Transaksi berhasil, namun gagal membuat PDF: " + e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+            e.printStackTrace();
+            new jAvailabelDate().setVisible(true);
+            this.dispose();
         } finally {
-            // Kembalikan koneksi ke mode auto-commit
             try {
                 if (conn != null) {
                     conn.setAutoCommit(true);
                 }
             } catch (SQLException ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Gagal mengembalikan auto-commit: " + ex.getMessage());
+                logger.log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
+
     }//GEN-LAST:event_jPayBtnActionPerformed
+
+    private void generatePdfReceipt(String bookingCode, String barcodeData) throws IOException, Exception {
+        String dest = System.getProperty("user.home") + "/Downloads/ETiket-" + bookingCode + ".pdf";
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            float yStart = page.getMediaBox().getUpperRightY() - 50;
+            float margin = 50;
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
+                contentStream.newLineAtOffset(margin + 200, yStart);
+                contentStream.showText("E-Tiket Kresika");
+                contentStream.endText();
+
+                float tableYstart = yStart - 40;
+                drawTable(page, contentStream, tableYstart, margin, bookingCode);
+
+                BufferedImage barcodeBufferedImage = createBarcodeImage(barcodeData, 300, 70);
+
+                // --- PERBAIKAN DI SINI ---
+                // Menghapus argumen ketiga yang menyebabkan error
+                PDImageXObject pdImage = LosslessFactory.createFromImage(document, barcodeBufferedImage);
+
+                contentStream.drawImage(pdImage, margin + 125, tableYstart - 200, pdImage.getWidth(), pdImage.getHeight());
+            }
+            document.save(dest);
+        }
+    }
+
+    private void drawTable(PDPage page, PDPageContentStream contentStream, float y, float margin, String bookingCode) throws IOException {
+        final float rowHeight = 20f;
+        final float tableWidth = page.getMediaBox().getWidth() - (2 * margin);
+        final float[] colWidths = {150, tableWidth - 150};
+
+        String[][] content = {
+            {"Kode Booking", ": " + bookingCode},
+            {"Nama Pemesan", ": " + this.namaDiterima},
+            {"Email", ": " + this.emailDiterima},
+            {"Kereta", ": " + this.namaKeretaDiterima},
+            {"Rute", ": " + this.ruteDiterima},
+            {"Waktu Berangkat", ": " + this.waktuBerangkatDiterima},
+            {"Kelas", ": " + this.kelasDiterima},
+            {"Jumlah Tiket", ": " + String.valueOf(this.jumlahTiketDiterima)},
+            {"Total Harga", ": " + NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(this.totalHargaDiterima)}
+        };
+
+        float nextY = y;
+        for (String[] row : content) {
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(margin, nextY);
+            contentStream.showText(row[0]);
+            contentStream.endText();
+
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(margin + colWidths[0], nextY);
+            contentStream.showText(row[1]);
+            contentStream.endText();
+
+            nextY -= rowHeight;
+        }
+    }
+
+    private BufferedImage createBarcodeImage(String text, int width, int height) throws Exception {
+        Code128Writer barcodeWriter = new Code128Writer();
+        BitMatrix bitMatrix = barcodeWriter.encode(text, BarcodeFormat.CODE_128, width, height);
+        return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
 
     /**
      * @param args the command line arguments
