@@ -36,6 +36,23 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.Code128Writer;
 
+//Import untuk Pengiriman email dan dengan Javamail
+import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 /**
  *
  * @author Administrator
@@ -246,6 +263,7 @@ public class jPayment extends javax.swing.JFrame {
         Connection conn = null;
         String kodePemesanan = "KRSK-" + System.currentTimeMillis();
         String dataBarcode = kodePemesanan + "-" + this.trainCodeDiterima;
+        String pdfFilePath = System.getProperty("user.home") + "/Downloads/ETiket-" + kodePemesanan + ".pdf";
 
         try {
             koneksi.connect();
@@ -288,9 +306,25 @@ public class jPayment extends javax.swing.JFrame {
 
             conn.commit();
 
-            generatePdfReceipt(kodePemesanan, dataBarcode);
+            // --- Panggil metode generatePdfReceipt dengan SEMUA data yang diperlukan ---
+            generatePdfReceipt(
+                    pdfFilePath,
+                    kodePemesanan,
+                    dataBarcode,
+                    this.namaDiterima,
+                    this.emailDiterima,
+                    this.namaKeretaDiterima,
+                    this.ruteDiterima,
+                    this.waktuBerangkatDiterima,
+                    this.kelasDiterima,
+                    this.jumlahTiketDiterima,
+                    this.totalHargaDiterima
+            );
 
-            JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan di folder Downloads Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            // Mengirim email setelah PDF berhasil dibuat
+            sendEmailWithAttachment(this.emailDiterima, "E-Tiket Kresika Anda - " + kodePemesanan, "Terima kasih telah melakukan pemesanan. Berikut adalah e-tiket Anda.", pdfFilePath);
+
+            JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan dan dikirim ke email Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
             new jAvailabelDate().setVisible(true);
             this.dispose();
@@ -306,7 +340,7 @@ public class jPayment extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Transaksi berhasil, namun gagal membuat PDF: " + e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Transaksi berhasil, namun gagal membuat PDF atau mengirim email: " + e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             new jAvailabelDate().setVisible(true);
             this.dispose();
@@ -322,8 +356,7 @@ public class jPayment extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jPayBtnActionPerformed
 
-    private void generatePdfReceipt(String bookingCode, String barcodeData) throws IOException, Exception {
-        String dest = System.getProperty("user.home") + "/Downloads/ETiket-" + bookingCode + ".pdf";
+    private void generatePdfReceipt(String filePath, String bookingCode, String barcodeData, String nama, String email, String namaKereta, String rute, String waktuBerangkat, String kelas, int jumlahTiket, double totalHarga) throws IOException, Exception {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
@@ -339,35 +372,28 @@ public class jPayment extends javax.swing.JFrame {
                 contentStream.endText();
 
                 float tableYstart = yStart - 40;
-                drawTable(page, contentStream, tableYstart, margin, bookingCode);
+                // Panggil drawTable dengan parameter yang relevan
+                drawTable(contentStream, tableYstart, margin, bookingCode, nama, email, namaKereta, rute, waktuBerangkat, kelas, jumlahTiket, totalHarga);
 
                 BufferedImage barcodeBufferedImage = createBarcodeImage(barcodeData, 300, 70);
-
-                // --- PERBAIKAN DI SINI ---
-                // Menghapus argumen ketiga yang menyebabkan error
                 PDImageXObject pdImage = LosslessFactory.createFromImage(document, barcodeBufferedImage);
-
                 contentStream.drawImage(pdImage, margin + 125, tableYstart - 200, pdImage.getWidth(), pdImage.getHeight());
             }
-            document.save(dest);
+            document.save(filePath);
         }
     }
 
-    private void drawTable(PDPage page, PDPageContentStream contentStream, float y, float margin, String bookingCode) throws IOException {
+    private void drawTable(PDPageContentStream contentStream, float y, float margin, String bookingCode, String nama, String email, String namaKereta, String rute, String waktuBerangkat, String kelas, int jumlahTiket, double totalHarga) throws IOException {
         final float rowHeight = 20f;
-        final float tableWidth = page.getMediaBox().getWidth() - (2 * margin);
+        final float tableWidth = PDRectangle.A4.getWidth() - (2 * margin);
         final float[] colWidths = {150, tableWidth - 150};
 
         String[][] content = {
-            {"Kode Booking", ": " + bookingCode},
-            {"Nama Pemesan", ": " + this.namaDiterima},
-            {"Email", ": " + this.emailDiterima},
-            {"Kereta", ": " + this.namaKeretaDiterima},
-            {"Rute", ": " + this.ruteDiterima},
-            {"Waktu Berangkat", ": " + this.waktuBerangkatDiterima},
-            {"Kelas", ": " + this.kelasDiterima},
-            {"Jumlah Tiket", ": " + String.valueOf(this.jumlahTiketDiterima)},
-            {"Total Harga", ": " + NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(this.totalHargaDiterima)}
+            {"Kode Booking", ": " + bookingCode}, {"Nama Pemesan", ": " + nama},
+            {"Email", ": " + email}, {"Kereta", ": " + namaKereta},
+            {"Rute", ": " + rute}, {"Waktu Berangkat", ": " + waktuBerangkat},
+            {"Kelas", ": " + kelas}, {"Jumlah Tiket", ": " + String.valueOf(jumlahTiket)},
+            {"Total Harga", ": " + NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(totalHarga)}
         };
 
         float nextY = y;
@@ -392,6 +418,64 @@ public class jPayment extends javax.swing.JFrame {
         Code128Writer barcodeWriter = new Code128Writer();
         BitMatrix bitMatrix = barcodeWriter.encode(text, BarcodeFormat.CODE_128, width, height);
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
+
+//    private void sendEmailWithAttachment(String recipientEmail, String subject, String body, String filePath) throws MessagingException {
+//        // Logika pengiriman email ada di sini
+//        System.out.println("Simulasi pengiriman email ke: " + recipientEmail);
+//        System.out.println("Dengan lampiran: " + filePath);
+//        // Transport.send(message); // Baris ini sengaja dinonaktifkan
+//    }
+    private void sendEmailWithAttachment(String recipientEmail, String subject, String body, String filePath) throws MessagingException {
+        final String fromEmail = "hbi2zz.contact@gmail.com"; // Ganti dengan email Gmail Anda
+        final String password = "ccgkzkjtvbcwzvkm"; // Ganti dengan "App Password" dari akun Google Anda
+
+        // --- KONFIGURASI YANG DIPERBAIKI (STANDAR TLS) ---
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Server SMTP Gmail
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587"); // Port untuk TLS
+        props.put("mail.smtp.auth", "true"); // Memerlukan autentikasi
+        props.put("mail.smtp.starttls.enable", "true"); // Wajib untuk port 587
+//          props.put("mail.smtp.host", "localhost"); // Mailpit runs locally
+//          props.put("mail.smtp.port", "1025");      // Default Mailpit SMTP port
+//          props.put("mail.smtp.auth", "false");     // No auth needed
+//          props.put("mail.smtp.starttls.enable", "false"); // No TLS needed
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
+            message.setSubject(subject);
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(body);
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart = new MimeBodyPart();
+            DataSource source = new FileDataSource(filePath);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(new File(filePath).getName());
+            multipart.addBodyPart(messageBodyPart);
+
+            message.setContent(multipart);
+
+            Transport.send(message);
+
+            System.out.println("Email berhasil dikirim ke " + recipientEmail);
+        } catch (MessagingException e) {
+            System.out.println("Error occurence : ");
+            e.printStackTrace();
+        }
     }
 
     /**
