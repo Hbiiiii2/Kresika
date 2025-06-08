@@ -174,6 +174,7 @@ public class jPaymentHistory extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableHistory = new javax.swing.JTable();
         jBtnBack = new javax.swing.JButton();
+        SearchIcon = new javax.swing.JLabel();
         jSearchField = new javax.swing.JTextField();
         jBackground = new javax.swing.JLabel();
 
@@ -205,7 +206,11 @@ public class jPaymentHistory extends javax.swing.JFrame {
         });
         getContentPane().add(jBtnBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 940, 290, 80));
 
+        SearchIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/SearchIcon.png"))); // NOI18N
+        getContentPane().add(SearchIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(1380, 43, -1, -1));
+
         jSearchField.setFont(new java.awt.Font("Baloo Da 2", 1, 24)); // NOI18N
+        jSearchField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         getContentPane().add(jSearchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(1370, 30, 310, 50));
 
         jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PaymentHistory.png"))); // NOI18N
@@ -246,6 +251,7 @@ public class jPaymentHistory extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel SearchIcon;
     private javax.swing.JLabel jBackground;
     private javax.swing.JButton jBtnBack;
     private javax.swing.JScrollPane jScrollPane1;

@@ -175,7 +175,7 @@
     <Component class="javax.swing.JLabel" name="jBackground">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/image/PaymentD.png"/>
+          <Image iconType="3" name="/image/PaymentE.png"/>
         </Property>
       </Properties>
       <Constraints>

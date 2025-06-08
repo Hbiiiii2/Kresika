@@ -241,7 +241,7 @@ public class jPayment extends javax.swing.JFrame {
         jClassTicket.setText("jLabel1");
         getContentPane().add(jClassTicket, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 200, 200, 40));
 
-        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PaymentD.png"))); // NOI18N
+        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/PaymentE.png"))); // NOI18N
         getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
@@ -329,7 +329,7 @@ public class jPayment extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan dan dikirim ke email Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
-            new jAvailabelDate().setVisible(true);
+            new jHomePage().setVisible(true);
             this.dispose();
 
         } catch (SQLException e) {
@@ -474,6 +474,8 @@ public class jPayment extends javax.swing.JFrame {
 //        props.put("mail.smtp.port", "1025");      
 //        props.put("mail.smtp.auth", "false");    
 //        props.put("mail.smtp.starttls.enable", "false"); 
+
+
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {

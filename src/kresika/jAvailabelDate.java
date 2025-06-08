@@ -192,7 +192,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
         });
         getContentPane().add(jBtnBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(135, 953, 290, 100));
 
-        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available dateB.png"))); // NOI18N
+        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available dateC.png"))); // NOI18N
         getContentPane().add(BGround, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();
