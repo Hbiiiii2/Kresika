@@ -50,11 +50,11 @@ public class loginPage extends javax.swing.JFrame {
 
         jTuser.setFont(new java.awt.Font("Baloo Da 2", 0, 24)); // NOI18N
         jTuser.setBorder(null);
-        getContentPane().add(jTuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 430, 590, 80));
+        getContentPane().add(jTuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 430, 570, 80));
 
         jtPass.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jtPass.setBorder(null);
-        getContentPane().add(jtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 550, 590, 80));
+        getContentPane().add(jtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 546, 570, 80));
 
         jButton1.setBackground(new java.awt.Color(0,0,0,1)
         );
@@ -103,8 +103,9 @@ public class loginPage extends javax.swing.JFrame {
 
                 if (rs.next()) {
                     JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat datang, " + rs.getString("fullname"));
+                    String userFullname = rs.getString("fullname");
 
-                    new jHomePage().setVisible(true); // Pindah ke halaman utama
+                    new jHomePage(userFullname).setVisible(true); // Pindah ke halaman utama
                     this.dispose(); // Tutup jForm
                 } else {
                     JOptionPane.showMessageDialog(this, "Username atau password salah");

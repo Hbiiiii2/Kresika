@@ -4,13 +4,17 @@
  */
 package kresika;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Administrator
  */
-
-
-
 public class jHomePage extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(jHomePage.class.getName());
@@ -20,6 +24,18 @@ public class jHomePage extends javax.swing.JFrame {
      */
     public jHomePage() {
         initComponents();
+        jName.setText("Guest");
+        setLocationRelativeTo(null);
+    }
+
+    public jHomePage(String fullname) {
+        initComponents();
+
+        // --- PERUBAHAN DI SINI ---
+        // Mengatur teks JLabel jName dengan nama lengkap yang diterima
+        jName.setText(fullname);
+
+        setLocationRelativeTo(null); // Menengahkan window
     }
 
     /**
@@ -34,6 +50,8 @@ public class jHomePage extends javax.swing.JFrame {
         jAddSchedule = new javax.swing.JButton();
         jBtnBook = new javax.swing.JButton();
         jPaymentHistory = new javax.swing.JButton();
+        jName = new javax.swing.JLabel();
+        jBtnLogout = new javax.swing.JButton();
         jBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -69,10 +87,24 @@ public class jHomePage extends javax.swing.JFrame {
         });
         getContentPane().add(jPaymentHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 580, 550, 80));
 
+        jName.setFont(new java.awt.Font("Baloo Da 2", 1, 36)); // NOI18N
+        jName.setText("Jname");
+        getContentPane().add(jName, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 356, 350, 40));
+
+        jBtnLogout.setContentAreaFilled(false);
+        jBtnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jBtnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnLogoutActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jBtnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(1435, 33, 280, 80));
+
         jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/HomePageB.png"))); // NOI18N
         getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBtnBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBookActionPerformed
@@ -89,6 +121,22 @@ public class jHomePage extends javax.swing.JFrame {
         new jPaymentHistory().setVisible(true); // Pindah ke halaman utama
         this.dispose();
     }//GEN-LAST:event_jPaymentHistoryActionPerformed
+
+    private void jBtnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLogoutActionPerformed
+        int response = JOptionPane.showConfirmDialog(this,
+                "Apakah Anda yakin ingin logout?",
+                "Konfirmasi Logout",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+        // Jika pengguna menekan tombol "Yes"
+        if (response == JOptionPane.YES_OPTION) {
+            // Kembali ke halaman login
+            new loginPage().setVisible(true);
+            // Tutup halaman saat ini
+            this.dispose();
+        }
+    }//GEN-LAST:event_jBtnLogoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -119,6 +167,8 @@ public class jHomePage extends javax.swing.JFrame {
     private javax.swing.JButton jAddSchedule;
     private javax.swing.JLabel jBackground;
     private javax.swing.JButton jBtnBook;
+    private javax.swing.JButton jBtnLogout;
+    private javax.swing.JLabel jName;
     private javax.swing.JButton jPaymentHistory;
     // End of variables declaration//GEN-END:variables
 }
