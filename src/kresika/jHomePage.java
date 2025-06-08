@@ -31,8 +31,9 @@ public class jHomePage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPaymentHistory = new javax.swing.JButton();
+        jAddSchedule = new javax.swing.JButton();
         jBtnBook = new javax.swing.JButton();
+        jPaymentHistory = new javax.swing.JButton();
         jBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -41,14 +42,14 @@ public class jHomePage extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(1728, 1117));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPaymentHistory.setContentAreaFilled(false);
-        jPaymentHistory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPaymentHistory.addActionListener(new java.awt.event.ActionListener() {
+        jAddSchedule.setContentAreaFilled(false);
+        jAddSchedule.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jAddSchedule.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPaymentHistoryActionPerformed(evt);
+                jAddScheduleActionPerformed(evt);
             }
         });
-        getContentPane().add(jPaymentHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 550, 80));
+        getContentPane().add(jAddSchedule, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 700, 550, 80));
 
         jBtnBook.setContentAreaFilled(false);
         jBtnBook.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -57,9 +58,18 @@ public class jHomePage extends javax.swing.JFrame {
                 jBtnBookActionPerformed(evt);
             }
         });
-        getContentPane().add(jBtnBook, new org.netbeans.lib.awtextra.AbsoluteConstraints(595, 463, 550, 80));
+        getContentPane().add(jBtnBook, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 450, 550, 80));
 
-        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/HomePage.png"))); // NOI18N
+        jPaymentHistory.setContentAreaFilled(false);
+        jPaymentHistory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPaymentHistory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPaymentHistoryActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jPaymentHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 580, 550, 80));
+
+        jBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/HomePageB.png"))); // NOI18N
         getContentPane().add(jBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();
@@ -69,6 +79,11 @@ public class jHomePage extends javax.swing.JFrame {
         new jAvailabelDate().setVisible(true); // Pindah ke halaman utama
         this.dispose();
     }//GEN-LAST:event_jBtnBookActionPerformed
+
+    private void jAddScheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAddScheduleActionPerformed
+        new jAddSchedule().setVisible(true); // Pindah ke halaman utama
+        this.dispose();
+    }//GEN-LAST:event_jAddScheduleActionPerformed
 
     private void jPaymentHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPaymentHistoryActionPerformed
         new jPaymentHistory().setVisible(true); // Pindah ke halaman utama
@@ -101,6 +116,7 @@ public class jHomePage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jAddSchedule;
     private javax.swing.JLabel jBackground;
     private javax.swing.JButton jBtnBook;
     private javax.swing.JButton jPaymentHistory;

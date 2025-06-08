@@ -152,6 +152,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
         jButtonNext = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jBtnBack = new javax.swing.JButton();
         BGround = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -182,7 +183,16 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(152, 197, 1430, 730));
 
-        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available dateA.png"))); // NOI18N
+        jBtnBack.setContentAreaFilled(false);
+        jBtnBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jBtnBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnBackActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jBtnBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(135, 953, 290, 100));
+
+        BGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/Available dateB.png"))); // NOI18N
         getContentPane().add(BGround, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();
@@ -211,6 +221,11 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_jButtonNextActionPerformed
+
+    private void jBtnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBackActionPerformed
+        new jHomePage().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jBtnBackActionPerformed
 
     /**
      * @param args the command line arguments
@@ -256,6 +271,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BGround;
+    private javax.swing.JButton jBtnBack;
     private javax.swing.JButton jButtonNext;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
