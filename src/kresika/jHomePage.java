@@ -126,8 +126,8 @@ public class jHomePage extends javax.swing.JFrame {
 
     private void jBtnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLogoutActionPerformed
         int response = JOptionPane.showConfirmDialog(this,
-                "Apakah Anda yakin ingin logout?",
-                "Konfirmasi Logout",
+                "Are you sure you want to logout?",
+                "Logout Confirmation",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
 

@@ -82,10 +82,10 @@ public class loginPage extends javax.swing.JFrame {
         String password = new String(jtPass.getPassword());
 //
         if (username.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username tidak boleh kosong");
+            JOptionPane.showMessageDialog(this, "Username cannot be empty");
 
         } else if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Password tidak boleh kosong");
+            JOptionPane.showMessageDialog(this, "The password cannot be empty");
 
         } else {
             try {
@@ -102,20 +102,20 @@ public class loginPage extends javax.swing.JFrame {
                 ResultSet rs = pst.executeQuery();
 
                 if (rs.next()) {
-                    JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat datang, " + rs.getString("fullname"));
+                    JOptionPane.showMessageDialog(this, "Login Successful! Welcome, " + rs.getString("fullname"));
                     String userFullname = rs.getString("fullname");
 
                     new jHomePage(userFullname).setVisible(true); // Pindah ke halaman utama
                     this.dispose(); // Tutup jForm
                 } else {
-                    JOptionPane.showMessageDialog(this, "Username atau password salah");
+                    JOptionPane.showMessageDialog(this, "Incorrect username or password");
                 }
 
                 rs.close();
                 pst.close();
 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Terjadi kesalahan koneksi: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "A connection error occurred: " + ex.getMessage());
             }
 
         }

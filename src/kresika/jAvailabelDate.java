@@ -46,12 +46,12 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
         // Menambahkan kolom ke model
         model.addColumn("No.");
-        model.addColumn("Nama Kereta");
-        model.addColumn("Tujuan");
-        model.addColumn("Kelas");
-        model.addColumn("Waktu Berangkat");
-        model.addColumn("Harga (Rp)"); // Menambahkan kembali kolom Harga
-        model.addColumn("Sisa Kursi");
+        model.addColumn("Train Name");
+        model.addColumn("destination");
+        model.addColumn("Class");
+        model.addColumn("Departure Time");
+        model.addColumn("Price (Rp)"); // Menambahkan kembali kolom Harga
+        model.addColumn("Remaining Seats");
         model.addColumn("Train Code");
 
         try {
@@ -91,12 +91,12 @@ public class jAvailabelDate extends javax.swing.JFrame {
                 jTable1.getColumnModel().getColumn(5).setCellRenderer(new CurrencyRenderer());
 
             } else {
-                JOptionPane.showMessageDialog(this, "Koneksi ke database null, tidak dapat memuat data.");
+                JOptionPane.showMessageDialog(this, "Connection to database null, unable to load data.");
             }
 
         } catch (SQLException e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error memuat data tabel: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Gagal memuat data dari database: " + e.getMessage());
+            logger.log(java.util.logging.Level.SEVERE, "Error loading table data: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to load data from database: " + e.getMessage());
         }
     }
 
@@ -201,7 +201,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
 
     private void jButtonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNextActionPerformed
         if (selectedTrainCode == null) {
-            JOptionPane.showMessageDialog(this, "Silakan klik salah satu baris jadwal terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please click on one of the schedule rows first!", "Warning", JOptionPane.WARNING_MESSAGE);
         } else {
             
             // Membuat rute lengkap (Asal - Tujuan)

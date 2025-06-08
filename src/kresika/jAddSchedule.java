@@ -34,7 +34,7 @@ public class jAddSchedule extends javax.swing.JFrame {
         loadRoutes();
         loadClasses();
 
-        setTitle("Tambah Jadwal Baru");
+        setTitle("Add New Schedule");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
@@ -75,7 +75,7 @@ public class jAddSchedule extends javax.swing.JFrame {
             }
             jNameTrainsCB.setModel(model);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal memuat data kereta: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to load train data: " + e.getMessage());
         }
     }
     
@@ -93,7 +93,7 @@ public class jAddSchedule extends javax.swing.JFrame {
             }
             jRouteCB.setModel(model);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal memuat data rute: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to load route data: " + e.getMessage());
         }
     }
     
@@ -111,7 +111,7 @@ public class jAddSchedule extends javax.swing.JFrame {
             }
             jClassOfSeat.setModel(model);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal memuat data kelas: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to load class data: " + e.getMessage());
         }
     }
     
@@ -235,7 +235,7 @@ public class jAddSchedule extends javax.swing.JFrame {
         if (trainItem == null || routeItem == null || classItem == null
                 || departureTimeStr.isEmpty() || arrivalTimeStr.isEmpty() || priceStr.isEmpty() || trainCode.isEmpty()
                 || departureTimeStr.equals("YYYY-MM-DD HH:MM:SS") || arrivalTimeStr.equals("YYYY-MM-DD HH:MM:SS")) {
-            JOptionPane.showMessageDialog(this, "Semua field harus diisi dengan benar!", "Input Tidak Lengkap", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "All fields must be filled in correctly!", "Incomplete Input", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -253,7 +253,7 @@ public class jAddSchedule extends javax.swing.JFrame {
             arrivalTimestamp = new Timestamp(dateFormat.parse(arrivalTimeStr).getTime());
             price = Double.parseDouble(priceStr);
         } catch (ParseException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Format Tanggal (YYYY-MM-DD HH:MM:SS) atau Harga (angka) salah!", "Format Salah", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Date Format (YYYY-MM-DD HH:MM:SS) or Price (number) is incorrect!", "Wrong Format", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -277,11 +277,11 @@ public class jAddSchedule extends javax.swing.JFrame {
 
             pst.executeUpdate();
 
-            JOptionPane.showMessageDialog(this, "Jadwal baru berhasil disimpan!");
+            JOptionPane.showMessageDialog(this, "The new schedule has been successfully saved!");
             resetForm(); // Kosongkan form setelah berhasil
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal menyimpan jadwal: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to save schedule: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }//GEN-LAST:event_jBtnSaveActionPerformed

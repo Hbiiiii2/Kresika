@@ -78,7 +78,7 @@ public class jPayment extends javax.swing.JFrame {
      */
     public jPayment() {
         initComponents();
-        setTitle("Rincian Pembayaran (No Data)");
+        setTitle("Payment Details (No Data)");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         jChangeDue.setText("Rp 0");
     }
@@ -121,7 +121,7 @@ public class jPayment extends javax.swing.JFrame {
         addCashReceivedListener();
 
         // Atur properti window
-        setTitle("Rincian Pembayaran");
+        setTitle("Payment Details");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
@@ -159,7 +159,7 @@ public class jPayment extends javax.swing.JFrame {
             NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
             jChangeDue.setText(formatter.format(changeDue));
         } catch (NumberFormatException ex) {
-            jChangeDue.setText("Input tidak valid");
+            jChangeDue.setText("Invalid input");
         }
     }
 
@@ -226,6 +226,11 @@ public class jPayment extends javax.swing.JFrame {
 
         jBack.setContentAreaFilled(false);
         jBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBackActionPerformed(evt);
+            }
+        });
         getContentPane().add(jBack, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 930, 330, 100));
 
         jPayBtn.setContentAreaFilled(false);
@@ -254,11 +259,11 @@ public class jPayment extends javax.swing.JFrame {
         try {
             cashReceived = Double.parseDouble(jChashReceived.getText());
             if (cashReceived < this.totalHargaDiterima) {
-                JOptionPane.showMessageDialog(this, "Uang tunai kurang!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Less cash!", "Warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Input uang tunai tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid cash input!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -279,7 +284,7 @@ public class jPayment extends javax.swing.JFrame {
                     if (rs.next()) {
                         this.idJadwalDiterima = rs.getInt("id_jadwal");
                     } else {
-                        throw new SQLException("Jadwal tidak ditemukan.");
+                        throw new SQLException("Schedule not found.");
                     }
                 }
             }
@@ -290,7 +295,7 @@ public class jPayment extends javax.swing.JFrame {
                 pstUpdate.setInt(2, this.idJadwalDiterima);
                 pstUpdate.setInt(3, this.jumlahTiketDiterima);
                 if (pstUpdate.executeUpdate() == 0) {
-                    throw new SQLException("Kursi tidak mencukupi.");
+                    throw new SQLException("Insufficient seats.");
                 }
             }
 
@@ -311,23 +316,23 @@ public class jPayment extends javax.swing.JFrame {
             generatePdfReceipt(pdfFilePath, kodePemesanan, dataBarcode);
 
             // Fungsi untuk mengirim email dan isinya
-            String emailSubject = "E-Tiket Kresika Anda - " + kodePemesanan;
-            String emailBody = "Yth. " + this.namaDiterima + ",\n\n"
-                    + "Terima kasih telah melakukan pemesanan tiket melalui Kresika.\n"
-                    + "Pembayaran Anda telah kami terima dan tiket Anda telah berhasil diterbitkan.\n\n"
-                    + "Berikut adalah detail perjalanan Anda:\n"
-                    + "   - Kereta: " + this.namaKeretaDiterima + " (" + this.kelasDiterima + ")\n"
-                    + "   - Rute: " + this.ruteDiterima + "\n"
-                    + "   - Waktu Berangkat: " + this.waktuBerangkatDiterima + "\n\n"
-                    + "E-Tiket Anda terlampir dalam email ini dalam format PDF. Mohon tunjukkan e-tiket ini saat akan melakukan boarding.\n\n"
+            String emailSubject = "Your Kresika E-Ticket -" + kodePemesanan;
+            String emailBody = "Dear. " + this.namaDiterima + ",\n\n"
+                    + "Thank you for ordering tickets through Kresika.\n"
+                    + "We have received your payment and your ticket has been successfully issued..\n\n"
+                    + "Here are the details of your trip:\n"
+                    + "   - Train: " + this.namaKeretaDiterima + " (" + this.kelasDiterima + ")\n"
+                    + "   - Route: " + this.ruteDiterima + "\n"
+                    + "   - Departure Time: " + this.waktuBerangkatDiterima + "\n\n"
+                    + "Your e-ticket is attached to this email in PDF format. Please show this e-ticket when boarding..\n\n"
                     + "Selamat menikmati perjalanan Anda!\n\n"
-                    + "Hormat kami,\n"
-                    + "Tim Kresika";
+                    + "Enjoy your trip,\n"
+                    + "Kresika Team";
 
             // Mengirim email dengan body yang sudah diperbarui
             sendEmailWithAttachment(this.emailDiterima, emailSubject, emailBody, pdfFilePath);
 
-            JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan dan dikirim ke email Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket has been saved and sent to your email.", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             new jHomePage().setVisible(true);
             this.dispose();
@@ -338,12 +343,12 @@ public class jPayment extends javax.swing.JFrame {
                     conn.rollback();
                 }
             } catch (SQLException ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Rollback gagal.", ex);
+                logger.log(java.util.logging.Level.SEVERE, "Rollback failed.", ex);
             }
             JOptionPane.showMessageDialog(this, "Error Database: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Transaksi berhasil, namun gagal membuat PDF atau mengirim email: " + e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Transaction successful, but failed to create PDF or send email: " + e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             new jAvailabelDate().setVisible(true);
             this.dispose();
@@ -358,6 +363,11 @@ public class jPayment extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_jPayBtnActionPerformed
+
+    private void jBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBackActionPerformed
+        new jAvailabelDate().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jBackActionPerformed
     // method pembuat e-ticket berbentuk pdf
     private void generatePdfReceipt(String filePath, String bookingCode, String barcodeData) throws IOException, Exception {
         try (PDDocument document = new PDDocument()) {
@@ -372,7 +382,7 @@ public class jPayment extends javax.swing.JFrame {
                 // 1. Tambahkan Logo Kresika
                 try (InputStream in = getClass().getResourceAsStream("/image/logo_kresika.png")) {
                     if (in == null) {
-                        System.err.println("Logo tidak ditemukan! Pastikan file logo ada di /image/");
+                        System.err.println("Logo not found! Make sure the logo file is in /image/");
                     } else {
                         PDImageXObject logoImage = PDImageXObject.createFromByteArray(document, in.readAllBytes(), "logo");
                         float logoWidth = 100;
@@ -380,14 +390,14 @@ public class jPayment extends javax.swing.JFrame {
                         contentStream.drawImage(logoImage, margin, yPosition - logoHeight + 20, logoWidth, logoHeight);
                     }
                 } catch (Exception e) {
-                    System.err.println("Gagal memuat logo: " + e.getMessage());
+                    System.err.println("Failed to load logo: " + e.getMessage());
                 }
 
                 // 2. Tambahkan Judul
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 20);
                 contentStream.newLineAtOffset(margin + 180, yPosition);
-                contentStream.showText("E-TIKET PERJALANAN");
+                contentStream.showText("TRAVEL E-TICKET");
                 contentStream.endText();
 
                 yPosition -= 50;
@@ -404,14 +414,14 @@ public class jPayment extends javax.swing.JFrame {
                 // Area Kiri: Detail Teks
                 float leftX = margin;
                 float currentY = yPosition;
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Kode Booking", bookingCode);
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Nama Pemesan", this.namaDiterima);
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Kereta", this.namaKeretaDiterima + " (" + this.kelasDiterima + ")");
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Rute", this.ruteDiterima);
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Waktu Berangkat", this.waktuBerangkatDiterima);
-                currentY = drawDetailRow(contentStream, leftX, currentY, "Jumlah Tiket", String.valueOf(this.jumlahTiketDiterima) + " Penumpang");
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Booking Code", bookingCode);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Orderer Name", this.namaDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Train", this.namaKeretaDiterima + " (" + this.kelasDiterima + ")");
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Route", this.ruteDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Departure Time", this.waktuBerangkatDiterima);
+                currentY = drawDetailRow(contentStream, leftX, currentY, "Number of Tickets", String.valueOf(this.jumlahTiketDiterima) + " Penumpang");
                 currentY -= 10; // Spasi sebelum total
-                drawDetailRow(contentStream, leftX, currentY, "Total Pembayaran", NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(this.totalHargaDiterima));
+                drawDetailRow(contentStream, leftX, currentY, "Total payment", NumberFormat.getCurrencyInstance(new Locale("id", "ID")).format(this.totalHargaDiterima));
 
                 // Area Kanan: QR Code
                 BufferedImage qrCodeImage = createQRCodeImage(barcodeData, 150, 150);
@@ -505,7 +515,7 @@ public class jPayment extends javax.swing.JFrame {
 
             Transport.send(message);
 
-            System.out.println("Email berhasil dikirim ke " + recipientEmail);
+            System.out.println("Email successfully sent to " + recipientEmail);
         } catch (MessagingException e) {
             System.out.println("Error occurence : ");
             e.printStackTrace();

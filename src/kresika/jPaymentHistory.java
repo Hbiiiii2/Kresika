@@ -36,7 +36,7 @@ public class jPaymentHistory extends javax.swing.JFrame {
         loadBookingHistory(); // Muat data saat form dibuat
         addSearchFunctionality(); // Tambahkan fungsi pencarian
 
-        setTitle("Riwayat Pembayaran");
+        setTitle("Payment History");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); // Agar tidak menutup seluruh aplikasi
         setLocationRelativeTo(null);
     }
@@ -52,15 +52,15 @@ public class jPaymentHistory extends javax.swing.JFrame {
         };
 
         // Menambahkan kolom ke model
-        model.addColumn("Kode Booking");
-        model.addColumn("Nama Pemesan");
-        model.addColumn("Email");
-        model.addColumn("Kereta");
-        model.addColumn("Tujuan");
-        model.addColumn("Kelas");
-        model.addColumn("Tgl Berangkat");
-        model.addColumn("Total Harga (Rp)");
-        model.addColumn("Tgl Pesan");
+        model.addColumn("Booking Code");
+        model.addColumn("Orderer Name");
+        model.addColumn("E-mail");
+        model.addColumn("Train");
+        model.addColumn("destination");
+        model.addColumn("Class");
+        model.addColumn("Departure Date");
+        model.addColumn("Total price (Rp)");
+        model.addColumn("Order Date");
 
         // Query untuk mengambil data riwayat pemesanan dengan JOIN
         String sql = "SELECT "
@@ -102,8 +102,8 @@ public class jPaymentHistory extends javax.swing.JFrame {
             jTableHistory.getColumnModel().getColumn(7).setCellRenderer(new CurrencyRenderer());
 
         } catch (SQLException e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error memuat riwayat pembayaran: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Gagal memuat data dari database: " + e.getMessage());
+            logger.log(java.util.logging.Level.SEVERE, "Error loading payment history: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to load data from database: " + e.getMessage());
         }
     }
     

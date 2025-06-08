@@ -26,16 +26,16 @@ public class jPassangerForm extends javax.swing.JFrame {
     public jPassangerForm() {
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Detail Penumpang (Mode Tes)");
+        setTitle("Passenger Details (Test Mode)");
 
         if (jRoute != null) {
-            jRoute.setText("Rute Belum Dipilih");
+            jRoute.setText("Route Not Selected");
         }
         if (jDate != null) {
-            jDate.setText("Tanggal Belum Dipilih");
+            jDate.setText("Date Not Selected");
         }
         if (jSeatClass != null) {
-            jSeatClass.setText("Seat Class belum Dipilih");
+            jSeatClass.setText("Seat Class Not Selected");
         }
     }
 
@@ -69,7 +69,7 @@ public class jPassangerForm extends javax.swing.JFrame {
         
         // Atur properti window
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Formulir Data Penumpang");
+        setTitle("Passenger Data Form");
     }
 
     /**
@@ -174,14 +174,14 @@ public class jPassangerForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
-        System.out.println("Tombol Back diklik.");
+        System.out.println("Back button is clicked.");
         // Logika untuk kembali
-         new jAvailabelDate().setVisible(true); // Membuka home
+        new jAvailabelDate().setVisible(true); // Membuka home
         this.dispose(); // Menutup form ini
     }//GEN-LAST:event_jButtonBackActionPerformed
 
     private void jButtonCOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCOActionPerformed
-        System.out.println("Tombol Checkout diklik.");
+        System.out.println("The Checkout button is clicked.");
 
         // 1. Ambil data dari field
         String nama = jName.getText().trim();
@@ -190,17 +190,17 @@ public class jPassangerForm extends javax.swing.JFrame {
 
         // 2. Validasi Input
         if (nama.isEmpty() || email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nama dan Email wajib diisi!", "Input Tidak Lengkap", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Name and Email are required!", "Incomplete Input", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            JOptionPane.showMessageDialog(this, "Format email tidak valid!", "Input Salah", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid email format!", "Incorrect Input", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (jumlahTiket <= 0) {
-            JOptionPane.showMessageDialog(this, "Jumlah tiket harus lebih dari 0!", "Input Salah", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "The number of tickets must be more than 0!", "Incorrect Input", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
