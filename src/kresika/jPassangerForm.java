@@ -176,7 +176,7 @@ public class jPassangerForm extends javax.swing.JFrame {
     private void jButtonBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackActionPerformed
         System.out.println("Tombol Back diklik.");
         // Logika untuk kembali
-        // new jHomePage().setVisible(true); // Membuka home
+         new jAvailabelDate().setVisible(true); // Membuka home
         this.dispose(); // Menutup form ini
     }//GEN-LAST:event_jButtonBackActionPerformed
 
