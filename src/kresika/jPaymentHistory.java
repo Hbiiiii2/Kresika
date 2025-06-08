@@ -6,7 +6,7 @@ package kresika;
 
 /**
  *
- * @author Administrator
+ * @author Hbiiiiii2
  */
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,6 +41,7 @@ public class jPaymentHistory extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    // Meload semua history Pembelian dari Data base dan menampilkannya dalam format Tabel
     private void loadBookingHistory() {
         // Membuat model tabel
         DefaultTableModel model = new DefaultTableModel() {
@@ -105,7 +106,8 @@ public class jPaymentHistory extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Gagal memuat data dari database: " + e.getMessage());
         }
     }
-
+    
+    // Method untuk mencari dan memfilter 
     private void addSearchFunctionality() {
         // Membuat Sorter dari model tabel
         sorter = new TableRowSorter<>((DefaultTableModel) jTableHistory.getModel());
@@ -138,7 +140,8 @@ public class jPaymentHistory extends javax.swing.JFrame {
             }
         });
     }
-
+    
+    // Method curency untuk harga agar lebih mudah di baca
     class CurrencyRenderer extends DefaultTableCellRenderer {
 
         private final NumberFormat formatter = NumberFormat.getIntegerInstance(new Locale("id", "ID"));

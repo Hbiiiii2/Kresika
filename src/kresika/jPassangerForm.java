@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author hbi2z
+ * @author Hbiiiiii2
  */
 public class jPassangerForm extends javax.swing.JFrame {
 
@@ -66,8 +66,7 @@ public class jPassangerForm extends javax.swing.JFrame {
             jSeatClass.setText(namaKeretaDiterima + " - " + kodeKelas);
         }
 
-        // (Anda juga bisa menampilkan nama kereta, kelas, harga, dll di JLabel jika ada)
-        // Contoh: jLabelTrainName.setText(this.namaKeretaDiterima);
+        
         // Atur properti window
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Formulir Data Penumpang");

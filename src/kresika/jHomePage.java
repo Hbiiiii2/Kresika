@@ -31,11 +31,13 @@ public class jHomePage extends javax.swing.JFrame {
     public jHomePage(String fullname) {
         initComponents();
 
-        // --- PERUBAHAN DI SINI ---
-        // Mengatur teks JLabel jName dengan nama lengkap yang diterima
+    
+        
+        
+        // Label Tulisan Welcome, User
         jName.setText(fullname);
 
-        setLocationRelativeTo(null); // Menengahkan window
+        setLocationRelativeTo(null); 
     }
 
     /**

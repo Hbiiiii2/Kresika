@@ -6,7 +6,7 @@ package kresika;
 
 /**
  *
- * @author Administrator
+ * @author Hbiiiiii2
  */
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ public class jAddSchedule extends javax.swing.JFrame {
     public jAddSchedule() {
         initComponents();
 
-        // Panggil metode untuk memuat data ke dalam ComboBox
+   
         loadTrains();
         loadRoutes();
         loadClasses();
@@ -59,9 +59,9 @@ public class jAddSchedule extends javax.swing.JFrame {
         public String toString() {
             return name; // Ini yang akan ditampilkan di ComboBox
         }
-    } // <-- Pastikan kelas ComboBoxItem berakhir di sini
+    } 
 
-    // --- METODE-METODE SEKARANG BERADA DI TEMPAT YANG BENAR (di dalam jAddSchedule) ---
+    // Method untuk load Table Trains
     private void loadTrains() {
         DefaultComboBoxModel<ComboBoxItem> model = new DefaultComboBoxModel<>();
         try {
@@ -78,7 +78,8 @@ public class jAddSchedule extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Gagal memuat data kereta: " + e.getMessage());
         }
     }
-
+    
+    // Method untuk load Table Route
     private void loadRoutes() {
         DefaultComboBoxModel<ComboBoxItem> model = new DefaultComboBoxModel<>();
         try {
@@ -95,7 +96,8 @@ public class jAddSchedule extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Gagal memuat data rute: " + e.getMessage());
         }
     }
-
+    
+    // Method untuk load Table train_Classes
     private void loadClasses() {
         DefaultComboBoxModel<ComboBoxItem> model = new DefaultComboBoxModel<>();
         try {
@@ -112,7 +114,8 @@ public class jAddSchedule extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Gagal memuat data kelas: " + e.getMessage());
         }
     }
-
+    
+    // Method untuk Reset Form atau Default form
     private void resetForm() {
         if (jNameTrainsCB.getItemCount() > 0) {
             jNameTrainsCB.setSelectedIndex(0);

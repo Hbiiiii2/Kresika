@@ -13,11 +13,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
-import kresika.jPassangerForm; // Pastikan import ini ada
+import kresika.jPassangerForm; 
 
 /**
  *
- * @author Administrator
+ * @author Hbiiiiii2
  */
 public class jAvailabelDate extends javax.swing.JFrame {
 
@@ -203,7 +203,7 @@ public class jAvailabelDate extends javax.swing.JFrame {
         if (selectedTrainCode == null) {
             JOptionPane.showMessageDialog(this, "Silakan klik salah satu baris jadwal terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
         } else {
-            // --- KODE BARU UNTUK REDIRECT ---
+            
             // Membuat rute lengkap (Asal - Tujuan)
             String ruteLengkap = "Tangerang - " + selectedRute;
 

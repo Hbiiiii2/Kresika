@@ -56,7 +56,7 @@ import javax.mail.internet.MimeMultipart;
 
 /**
  *
- * @author Administrator
+ * @author Hbiiiiii2
  */
 public class jPayment extends javax.swing.JFrame {
 
@@ -103,7 +103,6 @@ public class jPayment extends javax.swing.JFrame {
         jEmail.setText(this.emailDiterima);
         jNumberTicket.setText(String.valueOf(this.jumlahTiketDiterima));
 
-        // --- PERBAIKAN LOGIKA DI SINI ---
         jSeatClass.setText(this.kelasDiterima);   // Menampilkan kelas di jSeatClass
         jClassTicket.setText(namaKereta);        // Menampilkan nama kereta di jClassTicket
 
@@ -127,6 +126,7 @@ public class jPayment extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    // Method untuk mengatur Cash di terima
     private void addCashReceivedListener() {
         jChashReceived.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -146,6 +146,7 @@ public class jPayment extends javax.swing.JFrame {
         });
     }
 
+    // Method untuk mengatur uang kembalian
     private void calculateChange() {
         String cashText = jChashReceived.getText();
         if (cashText.isEmpty()) {
@@ -264,7 +265,7 @@ public class jPayment extends javax.swing.JFrame {
         Connection conn = null;
         String kodePemesanan = "KRSK-" + System.currentTimeMillis();
         String dataBarcode = kodePemesanan + "-" + this.trainCodeDiterima;
-        String pdfFilePath = System.getProperty("user.home") + "/Downloads/ETiket-" + kodePemesanan + ".pdf";
+        String pdfFilePath = System.getProperty("user.home") + "/Downloads/TicketKresika/ETiket-" + kodePemesanan + ".pdf"; //variabel Menyimpan file e-ticket ke lokal
 
         try {
             koneksi.connect();
@@ -309,8 +310,22 @@ public class jPayment extends javax.swing.JFrame {
 
             generatePdfReceipt(pdfFilePath, kodePemesanan, dataBarcode);
 
-            // --- MENGIRIM EMAIL DI SINI (LOGIKA DIAKTIFKAN) ---
-            sendEmailWithAttachment(this.emailDiterima, "E-Tiket Kresika Anda - " + kodePemesanan, "Terima kasih telah melakukan pemesanan. Berikut adalah e-tiket Anda.", pdfFilePath);
+            // Fungsi untuk mengirim email dan isinya
+            String emailSubject = "E-Tiket Kresika Anda - " + kodePemesanan;
+            String emailBody = "Yth. " + this.namaDiterima + ",\n\n"
+                    + "Terima kasih telah melakukan pemesanan tiket melalui Kresika.\n"
+                    + "Pembayaran Anda telah kami terima dan tiket Anda telah berhasil diterbitkan.\n\n"
+                    + "Berikut adalah detail perjalanan Anda:\n"
+                    + "   - Kereta: " + this.namaKeretaDiterima + " (" + this.kelasDiterima + ")\n"
+                    + "   - Rute: " + this.ruteDiterima + "\n"
+                    + "   - Waktu Berangkat: " + this.waktuBerangkatDiterima + "\n\n"
+                    + "E-Tiket Anda terlampir dalam email ini dalam format PDF. Mohon tunjukkan e-tiket ini saat akan melakukan boarding.\n\n"
+                    + "Selamat menikmati perjalanan Anda!\n\n"
+                    + "Hormat kami,\n"
+                    + "Tim Kresika";
+
+            // Mengirim email dengan body yang sudah diperbarui
+            sendEmailWithAttachment(this.emailDiterima, emailSubject, emailBody, pdfFilePath);
 
             JOptionPane.showMessageDialog(this, "Payment Successful!\nE-Ticket telah disimpan dan dikirim ke email Anda.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
@@ -343,7 +358,7 @@ public class jPayment extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_jPayBtnActionPerformed
-
+    // method pembuat e-ticket berbentuk pdf
     private void generatePdfReceipt(String filePath, String bookingCode, String barcodeData) throws IOException, Exception {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage(PDRectangle.A4);
@@ -410,6 +425,7 @@ public class jPayment extends javax.swing.JFrame {
         }
     }
 
+    //Method formating untuk e-ticket agar hasil nya lebih konsisten dan rapih
     private float drawDetailRow(PDPageContentStream contentStream, float x, float y, String label, String value) throws IOException {
         contentStream.setFont(PDType1Font.HELVETICA, 12);
         contentStream.beginText();
@@ -426,35 +442,38 @@ public class jPayment extends javax.swing.JFrame {
         return y - 25; // Mengembalikan posisi Y untuk baris selanjutnya
     }
 
+    //Method untuk membuat QR Code e-Ticket
     private BufferedImage createQRCodeImage(String text, int width, int height) throws Exception {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = barcodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
-//    private void sendEmailWithAttachment(String recipientEmail, String subject, String body, String filePath) throws MessagingException {
-//        // Logika pengiriman email ada di sini
-//        System.out.println("Simulasi pengiriman email ke: " + recipientEmail);
-//        System.out.println("Dengan lampiran: " + filePath);
-//        // Transport.send(message); // Baris ini sengaja dinonaktifkan
-//    }
+    //Method untuk mengirim via email smtp.gmail
     private void sendEmailWithAttachment(String recipientEmail, String subject, String body, String filePath) throws MessagingException {
-        final String fromEmail = "hbi2zz.contact@gmail.com"; // Ganti dengan email Gmail Anda
-        final String password = "ccgkzkjtvbcwzvkm"; // Ganti dengan "App Password" dari akun Google Anda
+        final String fromEmail = "kresikabsi.official@gmail.com"; // Ganti dengan email Gmail Anda
+        final String password = "cuwdnrmykzckvbax"; // Ganti dengan "App Password" dari akun Google Anda
 
-        // --- KONFIGURASI YANG DIPERBAIKI (STANDAR TLS) ---
         Properties props = new Properties();
-//        props.put("mail.smtp.host", "smtp.gmail.com"); // Server SMTP Gmail
+
+        //465 (SSL)
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+        //587 (TLS) 
+//        props.put("mail.smtp.host", "smtp.gmail.com"); 
 //        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-//        props.put("mail.smtp.port", "587"); 
-//        props.put("mail.smtp.auth", "true"); 
-//        props.put("mail.smtp.starttls.enable", "true"); 
-
-        props.put("mail.smtp.host", "localhost"); // Mailpit runs locally
-        props.put("mail.smtp.port", "1025");      // Default Mailpit SMTP port
-        props.put("mail.smtp.auth", "false");     // No auth needed
-        props.put("mail.smtp.starttls.enable", "false"); // No TLS needed
-
+//        props.put("mail.smtp.port", "587");
+//        props.put("mail.smtp.auth", "true");
+//        props.put("mail.smtp.starttls.enable", "true");
+        //LocalHost
+//        props.put("mail.smtp.host", "localhost"); 
+//        props.put("mail.smtp.port", "1025");      
+//        props.put("mail.smtp.auth", "false");    
+//        props.put("mail.smtp.starttls.enable", "false"); 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {

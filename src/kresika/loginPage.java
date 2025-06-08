@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author hbi2z
+ * @author Hbiiiiii2
  */
 public class loginPage extends javax.swing.JFrame {
 
