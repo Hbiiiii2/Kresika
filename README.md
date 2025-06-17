@@ -126,8 +126,6 @@ berikut adalah teknologi dan library yang di gunakan:
     * **ZXing (Zebra Crossing) 3.5.3:** Untuk membuat gambar QR Code.
         * Tautan Unduhan (Core): [`core-3.5.3.jar`](https://repo1.maven.org/maven2/com/google/zxing/core/3.5.3/core-3.5.3.jar)
         * Tautan Unduhan (JavaSE): [`javase-3.5.3.jar`](https://repo1.maven.org/maven2/com/google/zxing/javase/3.5.3/javase-3.5.3.jar)
-    * **JavaMail 1.6.2 :** Untuk mengirim email.
-        * Tautan Unduhan: [`javax.mail-1.6.2.jar`](https://repo1.maven.org/maven2/com/sun/mail/javax.mail/1.6.2/javax.mail-1.6.2.jar)
     * **Activation 1.1.1:** Dependensi untuk JavaMail.
         * Tautan Unduhan: [`activation-1.1.1.jar`](https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar)
     * **Absolute Layout:** Library NetBeans untuk membantu penataan komponen Swing secara bebas.
